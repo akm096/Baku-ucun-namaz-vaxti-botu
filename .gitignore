@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Cloudflare
+.wrangler/
+.dev.vars
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log

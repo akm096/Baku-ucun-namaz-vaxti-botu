@@ -1,0 +1,27 @@
+name = "baku-namaz-bot"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+
+# ─── KV Namespace Binding ───────────────────────────────────
+# Yaratmaq üçün:
+#   wrangler kv namespace create NOTIFICATIONS_KV
+# Nəticədə sizə bir ID verəcək — onu aşağıya yapışdırın.
+[[kv_namespaces]]
+binding = "NOTIFICATIONS_KV"
+id = "YOUR_KV_NAMESPACE_ID_HERE"
+
+# Preview üçün (wrangler dev):
+# preview_id = "YOUR_PREVIEW_KV_NAMESPACE_ID_HERE"
+
+# ─── Cron Triggers ──────────────────────────────────────────
+# Hər dəqiqə scheduled() handler-ini çağırır
+[triggers]
+crons = ["* * * * *"]
+
+# ─── Environment Variables ──────────────────────────────────
+# Bu dəyişənləri secret kimi təyin edin:
+#   wrangler secret put BOT_TOKEN
+#   wrangler secret put ALLOWED_CHAT_ID
+#
+# [vars]
+# SOME_PUBLIC_VAR = "dəyər"

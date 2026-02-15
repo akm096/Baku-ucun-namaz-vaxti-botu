@@ -1,0 +1,14 @@
+{
+    "name": "baku-namaz-bot",
+    "version": "2.0.0",
+    "description": "Bakı namaz vaxtları Telegram botu — Cloudflare Workers",
+    "main": "src/worker.js",
+    "scripts": {
+        "dev": "wrangler dev",
+        "deploy": "wrangler deploy",
+        "tail": "wrangler tail"
+    },
+    "devDependencies": {
+        "wrangler": "^4.65.0"
+    }
+}
