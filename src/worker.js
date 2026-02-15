@@ -182,6 +182,85 @@ const MOTIVASIYA_MESAJLARI = [
     '🏆 30-cu gün! TƏBRİKLƏR! Ramazan tamamlandı! 🎉',
 ];
 
+// ─── Hicri Təqvim Çevirici (Kuwaiti Algorithm) ─────────────────
+function gregorianToHijri(year, month, day) {
+    const d = new Date(year, month - 1, day);
+    const jd = Math.floor((d.getTime() / 86400000) + 2440587.5);
+    const l = jd - 1948440 + 10632;
+    const n = Math.floor((l - 1) / 10631);
+    const lRem = l - 10631 * n + 354;
+    const j = (Math.floor((10985 - lRem) / 5316)) * (Math.floor((50 * lRem) / 17719))
+        + (Math.floor(lRem / 5670)) * (Math.floor((43 * lRem) / 15238));
+    const lFinal = lRem - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50))
+        - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
+    const hMonth = Math.floor((24 * lFinal) / 709);
+    const hDay = lFinal - Math.floor((709 * hMonth) / 24);
+    const hYear = 30 * n + j - 30;
+    return { year: hYear, month: hMonth, day: hDay };
+}
+
+const HIJRI_MONTH_NAMES = {
+    1: 'Məhərrəm', 2: 'Səfər', 3: 'Rəbiüləvvəl', 4: 'Rəbiülaxır',
+    5: 'Cəmadiyüləvvəl', 6: 'Cəmadiyülaxır', 7: 'Rəcəb', 8: 'Şaban',
+    9: 'Ramazan', 10: 'Şəvval', 11: 'Zilqədə', 12: 'Zilhiccə',
+};
+
+function formatHijriDate(year, month, day) {
+    const h = gregorianToHijri(year, month, day);
+    const mName = HIJRI_MONTH_NAMES[h.month] || `Ay ${h.month}`;
+    return `${h.day} ${mName} ${h.year}`;
+}
+
+// ─── Genişləndirilmiş Hədis / Ayə Bazası (il boyu) ────────────
+const EXTENDED_HADITH_DB = [
+    '"Əməllər niyyətlərə görədir." (Buxari)',
+    '"Müsəlman müsəlmanın qardaşıdır." (Buxari)',
+    '"Gülər üzlə qarşılamaq da sədəqədir." (Tirmizi)',
+    '"Ən xeyirliniz əxlaqı ən gözəl olanınızdır." (Buxari)',
+    '"Güclü mömin zəif mömindən daha xeyirli və Allaha daha sevimlidir." (Muslim)',
+    '"Kim Allaha və axirət gününə iman gətirirsə, ya xeyir danışsın, ya da sussun." (Buxari)',
+    '"Qonşusu ac ikən tox yatan bizdən deyildir." (Buxari)',
+    '"Heç biriniz özünə istədiyini qardaşına da istəmədikcə iman gətirmiş olmaz." (Buxari)',
+    '"Dünya möminin zindanı, kafirin cənnətidir." (Muslim)',
+    '"Elm öyrənmək hər müsəlmana fərzdir." (İbn Macə)',
+    '"Təvazökarlıq göstərəni Allah ucaldar." (Muslim)',
+    '"Ən yaxşı sədəqə elm öyrətməkdir." (İbn Macə)',
+    '"Allahın ən sevdiyi əməl vaxtında qılınan namazdır." (Buxari)',
+    '"Dua ibadətin beynidir." (Tirmizi)',
+    '"Səbr imanın yarısıdır." (Beyhəqi)',
+    '"Şükür edənin nemətini artıraram." (İbrahim, 7)',
+    '"Zikr edənlə etməyən, diri ilə ölü kimidir." (Buxari)',
+    '"Ana-ataya yaxşılıq — Allahın razılığıdır." (Tirmizi)',
+    '"Qəzəblənmə!" (Buxari)',
+    '"Kim bir çətinliyi aradan qaldırsa, Allah da onun çətinliyini aradan qaldırar." (Muslim)',
+    '"Ruzini genişləndirmək istəyən, qohumluq əlaqəsini qorusun." (Buxari)',
+    '"Ən çox istiğfar edənə Allah hər çətinlikdən çıxış yolu göstərər." (Əbu Davud)',
+    '"Namazı tərk edən küfrlə arasındakı əhdi pozmuşdur." (Muslim)',
+    '"Quran oxuyun, o sizə şəfaətçi olacaq." (Muslim)',
+    '"Allahın rəhməti yaxındır." (Əraf, 56)',
+    '"Əgər Allaha təvəkkül etsəydiniz, quşları ruziləndirdiyi kimi sizi də ruziləndirərdi." (Tirmizi)',
+    '"Cənnət anaların ayaqları altındadır." (Nəsai)',
+    '"İnsanlara təşəkkür etməyən Allaha şükür etməz." (Tirmizi)',
+    '"Hər yaxşı əməl sədəqədir." (Buxari)',
+    '"Yatmadan əvvəl Ayətəl-Kürsi oxuyana Allah qoruyucu göndərər." (Buxari)',
+    '"Ən faydası olan elm — əməl edilən elmdir." (Əbu Davud)',
+    '"Möminin niyyəti əməlindən xeyirlidir." (Təbərani)',
+    '"Allah bir qulu sevəndə onu sınağa çəkər." (Tirmizi)',
+    '"Dünyanı axirətin tarlası bilin." (Beyhəqi)',
+    '"Kim gecə Bəqərə surəsinin son iki ayəsini oxusa, ona kifayət edər." (Buxari)',
+    '"Allahdan cənnəti istəyin və cəhənnəmdən sığının." (Tirmizi)',
+];
+
+// ─── Zikr (Təsbeh) Sayğac Konfiqurasiyası ──────────────────────
+const ZIKR_ITEMS = [
+    { id: 'subhanallah', label: 'سُبْحَانَ ٱللَّٰهِ', name: 'SubhanAllah', target: 33 },
+    { id: 'alhamdulillah', label: 'ٱلْحَمْدُ لِلَّٰهِ', name: 'Əlhəmdulillah', target: 33 },
+    { id: 'allahuakbar', label: 'ٱللَّٰهُ أَكْبَرُ', name: 'Allahu Əkbər', target: 34 },
+    { id: 'lailahaillallah', label: 'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ', name: 'La iləhə illəllah', target: 100 },
+    { id: 'istigfar', label: 'أَسْتَغْفِرُ ٱللَّٰهَ', name: 'Əstağfirullah', target: 100 },
+    { id: 'salavat', label: 'صَلِّ عَلَى مُحَمَّدٍ', name: 'Salavat', target: 100 },
+];
+
 // Defolt bildiriş ayarları
 const DEFAULT_SETTINGS = {
     reminder15: true,
@@ -560,10 +639,15 @@ function getMainMenuKeyboard() {
     }
 
     keyboard.push([
-        { text: '🧭 Qiblə', callback_data: 'cmd_qible' },
-        { text: '⚙️ Ayarlar', callback_data: 'cmd_ayarlar' },
+        { text: '📿 Təsbeh', callback_data: 'cmd_zikr' },
+        { text: '📖 Hədis', callback_data: 'cmd_hedis' },
     ]);
     keyboard.push([
+        { text: '🧭 Qiblə', callback_data: 'cmd_qible' },
+        { text: '📅 Hicri', callback_data: 'cmd_cevir_today' },
+    ]);
+    keyboard.push([
+        { text: '⚙️ Ayarlar', callback_data: 'cmd_ayarlar' },
         { text: '❓ Kömək', callback_data: 'cmd_help' },
     ]);
 
@@ -624,9 +708,17 @@ function formatPrayerTimesMessage(dayData, dateStr, currentMinutes, title = '�
         }
     }
 
+    // Hicri tarixi hesabla
+    const dateParts = dateStr.split('.');
+    const hijriStr = (dateParts.length === 3) ?
+        formatHijriDate(parseInt(dateParts[2]), parseInt(dateParts[1]), parseInt(dateParts[0])) : '';
+
     let msg = `${title}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `📍 Bakı  •  🗓 ${dateStr}\n`;
+    if (hijriStr) {
+        msg += `☪️ ${hijriStr}\n`;
+    }
 
     if (ramadanInfo) {
         msg += `🌙 Ramazan — ${ramadanInfo.dayNumber}-ci gün\n`;
@@ -706,7 +798,7 @@ function formatMonthlyMessage(monthData, monthNum, year, part, totalParts) {
     msg += `📍 Bakı\n\n`;
 
     // Kompakt cədvəl başlığı
-    msg += `<code>Gün  İmsak Sübh  Zöhr  Əsr   Məğr  İşa</code>\n`;
+    msg += `<code>Gün  Sübh  Günçx Zöhr  Əsr   Məğr  İşa</code>\n`;
     msg += `<code>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</code>\n`;
 
     for (const dayData of monthData) {
@@ -714,7 +806,7 @@ function formatMonthlyMessage(monthData, monthNum, year, part, totalParts) {
         const isRam = isRamadan(year, monthNum, dayData.day);
         const ramMark = isRam ? '🌙' : '  ';
 
-        msg += `<code>${d}${ramMark} ${dayData.imsak} ${dayData.subh} ${dayData.zohr} ${dayData.esr} ${dayData.meqrib} ${dayData.isha}</code>\n`;
+        msg += `<code>${d}${ramMark} ${dayData.subh} ${dayData.gunCixir} ${dayData.zohr} ${dayData.esr} ${dayData.meqrib} ${dayData.isha}</code>\n`;
     }
 
     msg += `\n🕌 Qafqaz Müsəlmanları İdarəsi`;
@@ -930,14 +1022,18 @@ async function cmdHelp(botToken, chatId) {
     msg += `  /sabah — Sabahkı vaxtlar\n`;
     msg += `  /heftelik — 7 günlük cədvəl\n`;
     msg += `  /ay — Aylıq cədvəl\n`;
-    msg += `  /ay mart — Müəyyən ayın cədvəli\n`;
-    msg += `  /tarix 25.03.2026 — Tarix üzrə\n`;
-    msg += `  /tarix 25 mart — Tarix üzrə\n\n`;
+    msg += `  /tarix 25.03.2026 — Tarix üzrə\n\n`;
     msg += `🌙 <b>Ramazan:</b>\n`;
     msg += `  /ramazan — Ramazan təqvimi + oruc izləmə\n`;
     msg += `  /statistika — Oruc statistikası\n`;
     msg += `  /dua — İftar/İmsak duaları\n\n`;
-    msg += `📖 <b>Əlavə:</b>\n`;
+    msg += `� <b>İbadət:</b>\n`;
+    msg += `  /zikr — Rəqəmsal Təsbeh (sayğac)\n`;
+    msg += `  /hedis — Günün hədisi\n\n`;
+    msg += `☪️ <b>Hicri Təqvim:</b>\n`;
+    msg += `  /cevir — Bugünkü Hicri tarix\n`;
+    msg += `  /cevir 25.03.2026 — Tarix çevirici\n\n`;
+    msg += `�📖 <b>Əlavə:</b>\n`;
     msg += `  /qible — Qiblə istiqaməti\n`;
     msg += `  /ayarlar — Bildiriş ayarları\n`;
     msg += `  /help — Bu kömək mesajı\n\n`;
@@ -945,11 +1041,6 @@ async function cmdHelp(botToken, chatId) {
     msg += `  • Hər namaza 15, 10, 5 dəq qalmış\n`;
     msg += `  • Namaz vaxtı gəldikdə\n`;
     msg += `  • Hər gün səhər 05:00-da cədvəl\n\n`;
-    msg += `🌙 <b>Ramazan Rejimi:</b>\n`;
-    msg += `  Ramazan ayında avtomatik aktivləşir:\n`;
-    msg += `  • İmsak/İftar vaxtları vurğulanır\n`;
-    msg += `  • İftara 30/15/5 dəq xatırlatma\n`;
-    msg += `  • Oruc izləmə (✅/❌)\n\n`;
     msg += `💡 <i>Aşağıdakı düymələrdən də istifadə edə bilərsiniz!</i>`;
     await telegramSendMessage(botToken, chatId, msg, getMainMenuKeyboard());
 }
@@ -1327,6 +1418,199 @@ async function cmdDua(botToken, chatId) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  HİCRİ TƏQVİM ÇEVİRİCİ
+// ═══════════════════════════════════════════════════════════════
+
+async function cmdCevir(botToken, chatId, dateText) {
+    const baku = getBakuNow();
+    const parsed = parseDate(dateText, baku.year);
+
+    if (!parsed) {
+        let reply = `⚠️ Tarix formatı düzgün deyil.\n\n`;
+        reply += `<b>Düzgün formatlar:</b>\n`;
+        reply += `• /cevir 25.03.2026\n`;
+        reply += `• /cevir 25.03\n`;
+        reply += `• /cevir 25 mart`;
+        await telegramSendMessage(botToken, chatId, reply, getBackKeyboard());
+        return;
+    }
+
+    const hijri = gregorianToHijri(parsed.year, parsed.month, parsed.day);
+    const hMonthName = HIJRI_MONTH_NAMES[hijri.month] || `Ay ${hijri.month}`;
+    const weekday = getWeekdayName(parsed.year, parsed.month, parsed.day);
+    const gDateStr = `${String(parsed.day).padStart(2, '0')}.${String(parsed.month).padStart(2, '0')}.${parsed.year}`;
+
+    let msg = `📅 <b>Təqvim Çevirici</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `🗓 <b>Miladi:</b> ${weekday}, ${gDateStr}\n\n`;
+    msg += `☪️ <b>Hicri:</b> ${hijri.day} ${hMonthName} ${hijri.year}\n\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💡 <i>Hicri tarix ±1 gün fərq edə bilər.</i>`;
+
+    await telegramSendMessage(botToken, chatId, msg, getBackKeyboard());
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GÜNÜN HƏDİSİ
+// ═══════════════════════════════════════════════════════════════
+
+async function cmdHedis(botToken, chatId) {
+    const baku = getBakuNow();
+    // Günə görə sabit hədis seç (hər gün fərqli, amma gün içi eyni)
+    const dayOfYear = Math.floor((new Date(baku.year, baku.month - 1, baku.day) - new Date(baku.year, 0, 0)) / (24 * 60 * 60 * 1000));
+    const allHadith = [...RAMADAN_DAILY_QUOTES, ...EXTENDED_HADITH_DB];
+    const index = dayOfYear % allHadith.length;
+    const hijriStr = formatHijriDate(baku.year, baku.month, baku.day);
+
+    let msg = `📿 <b>Günün Hədisi</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `🗓 ${baku.dateStr}  •  ☪️ ${hijriStr}\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `<i>${allHadith[index]}</i>\n\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💡 Hər gün yeni hədis üçün /hedis yazın.`;
+
+    const kb = {
+        inline_keyboard: [
+            [{ text: '📿 Başqa hədis', callback_data: 'cmd_hedis_random' }],
+            [{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }],
+        ],
+    };
+    await telegramSendMessage(botToken, chatId, msg, kb);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ZİKR (TƏSBEH) SAYĞAC
+// ═══════════════════════════════════════════════════════════════
+
+function getZikrKeyboard(counts) {
+    const keyboard = [];
+    for (const item of ZIKR_ITEMS) {
+        const count = counts[item.id] || 0;
+        const done = count >= item.target;
+        const icon = done ? '✅' : '📿';
+        keyboard.push([
+            { text: `${icon} ${item.name}: ${count}/${item.target}`, callback_data: `zikr_info_${item.id}` },
+            { text: '➕', callback_data: `zikr_plus_${item.id}` },
+        ]);
+    }
+    keyboard.push([{ text: '🔄 Sıfırla', callback_data: 'zikr_reset' }]);
+    keyboard.push([{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }]);
+    return { inline_keyboard: keyboard };
+}
+
+async function cmdZikr(botToken, chatId, env) {
+    // KV-dən sayğac oxu
+    const key = `zikr:${chatId}`;
+    const counts = await env.NOTIFICATIONS_KV.get(key, 'json') || {};
+
+    let msg = `📿 <b>Rəqəmsal Təsbeh</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `Aşağıdakı düymələrə basaraq zikr edin.\n`;
+    msg += `Hər zikrin hədəfinə çatdıqda ✅ görünəcək.\n\n`;
+
+    // Ümumi statistika
+    let totalCount = 0;
+    for (const item of ZIKR_ITEMS) {
+        totalCount += counts[item.id] || 0;
+    }
+    msg += `🔢 Ümumi zikr sayı: <b>${totalCount}</b>`;
+
+    await telegramSendMessage(botToken, chatId, msg, getZikrKeyboard(counts));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  İSTİFADƏÇİ İZLƏMƏ & BROADCAST
+// ═══════════════════════════════════════════════════════════════
+
+async function trackUser(chatId, env, userObj = null) {
+    const userKey = `user:${chatId}`;
+    const now = new Date().toISOString();
+
+    let existing = null;
+    try {
+        const raw = await env.NOTIFICATIONS_KV.get(userKey);
+        if (raw) {
+            try {
+                existing = JSON.parse(raw);
+            } catch {
+                // Köhnə format: sadə ISO string idi
+                existing = { joined: raw, lastActive: now, firstName: 'Naməlum' };
+            }
+        }
+    } catch { /* KV xətası — davam et */ }
+
+    if (!existing) {
+        // Yeni istifadəçi
+        const data = {
+            firstName: userObj?.first_name || 'Naməlum',
+            lastName: userObj?.last_name || '',
+            username: userObj?.username || '',
+            joined: now,
+            lastActive: now,
+        };
+        await env.NOTIFICATIONS_KV.put(userKey, JSON.stringify(data));
+        const countStr = await env.NOTIFICATIONS_KV.get('users:count');
+        const count = countStr ? parseInt(countStr, 10) : 0;
+        await env.NOTIFICATIONS_KV.put('users:count', String(count + 1));
+    } else {
+        // Mövcud istifadəçi — lastActive-i yenilə
+        existing.lastActive = now;
+        if (userObj?.first_name) existing.firstName = userObj.first_name;
+        if (userObj?.last_name) existing.lastName = userObj.last_name;
+        if (userObj?.username) existing.username = userObj.username;
+        await env.NOTIFICATIONS_KV.put(userKey, JSON.stringify(existing));
+    }
+}
+
+async function getAllUserIds(env) {
+    const users = [];
+    let cursor = null;
+    do {
+        const result = await env.NOTIFICATIONS_KV.list({ prefix: 'user:', cursor, limit: 1000 });
+        for (const key of result.keys) {
+            if (key.name !== 'users:count') {
+                const id = key.name.replace('user:', '');
+                users.push(id);
+            }
+        }
+        cursor = result.list_complete ? null : result.cursor;
+    } while (cursor);
+    return users;
+}
+
+async function cmdBroadcast(botToken, chatId, messageText, env) {
+    const allowedId = String(env.ALLOWED_CHAT_ID);
+    if (String(chatId) !== allowedId) {
+        await telegramSendMessage(botToken, chatId, '⛔ Bu əmr yalnız admin üçündür.');
+        return;
+    }
+
+    if (!messageText || messageText.trim() === '') {
+        await telegramSendMessage(botToken, chatId, '⚠️ İstifadə: /broadcast <mesaj mətni>');
+        return;
+    }
+
+    const userIds = await getAllUserIds(env);
+    let sent = 0;
+    let failed = 0;
+
+    const broadcastMsg = `📢 <b>Elan:</b>\n━━━━━━━━━━━━━━━━━━━━━\n\n${messageText.trim()}`;
+
+    for (const uid of userIds) {
+        try {
+            await telegramSendMessage(botToken, uid, broadcastMsg);
+            sent++;
+        } catch (e) {
+            failed++;
+        }
+    }
+
+    const report = `✅ Yayım tamamlandı!\n\n📤 Göndərildi: ${sent}\n❌ Uğursuz: ${failed}\n👥 Ümumi: ${userIds.length}`;
+    await telegramSendMessage(botToken, chatId, report);
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  CALLBACK QUERY HANDLER (İnline Düymələr)
 // ═══════════════════════════════════════════════════════════════
 
@@ -1385,6 +1669,88 @@ async function handleCallbackQuery(callbackQuery, env) {
         } else {
             await telegramEditMessage(botToken, chatId, messageId, '🕌 Bakı Namaz Vaxtları Botu\n\nAşağıdakı düymələrdən istifadə edin:', getMainMenuKeyboard());
         }
+        return;
+    }
+
+    // ── Yeni əmrlər: Zikr, Hədis, Hicri ──
+    if (data === 'cmd_zikr') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📿 Təsbeh');
+        await cmdZikr(botToken, chatId, env);
+        return;
+    }
+    if (data === 'cmd_hedis') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📖 Hədis');
+        await cmdHedis(botToken, chatId);
+        return;
+    }
+    if (data === 'cmd_hedis_random') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📿 Yeni hədis');
+        const allHadith = [...RAMADAN_DAILY_QUOTES, ...EXTENDED_HADITH_DB];
+        const randomIdx = Math.floor(Math.random() * allHadith.length);
+        const baku = getBakuNow();
+        const hijriStr = formatHijriDate(baku.year, baku.month, baku.day);
+        let msg = `📿 <b>Təsadüfi Hədis</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `<i>${allHadith[randomIdx]}</i>\n\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+        msg += `☪️ ${hijriStr}`;
+        const kb = {
+            inline_keyboard: [
+                [{ text: '📿 Başqa hədis', callback_data: 'cmd_hedis_random' }],
+                [{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }],
+            ],
+        };
+        await telegramSendMessage(botToken, chatId, msg, kb);
+        return;
+    }
+    if (data === 'cmd_cevir_today') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📅 Hicri');
+        const baku = getBakuNow();
+        await cmdCevir(botToken, chatId, baku.dateStr);
+        return;
+    }
+
+    // ── Zikr sayğac düymələri ──
+    if (data.startsWith('zikr_plus_')) {
+        const zikrId = data.replace('zikr_plus_', '');
+        const key = `zikr:${chatId}`;
+        const counts = await env.NOTIFICATIONS_KV.get(key, 'json') || {};
+        counts[zikrId] = (counts[zikrId] || 0) + 1;
+        await env.NOTIFICATIONS_KV.put(key, JSON.stringify(counts));
+        const item = ZIKR_ITEMS.find(z => z.id === zikrId);
+        const label = item ? item.name : zikrId;
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `${label}: ${counts[zikrId]}`);
+        // Mesajı yenilə
+        let totalCount = 0;
+        for (const zi of ZIKR_ITEMS) { totalCount += counts[zi.id] || 0; }
+        let msg = `📿 <b>Rəqəmsal Təsbeh</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `Aşağıdakı düymələrə basaraq zikr edin.\n`;
+        msg += `Hər zikrin hədəfinə çatdıqda ✅ görünəcək.\n\n`;
+        msg += `🔢 Ümumi zikr sayı: <b>${totalCount}</b>`;
+        await telegramEditMessage(botToken, chatId, messageId, msg, getZikrKeyboard(counts));
+        return;
+    }
+    if (data.startsWith('zikr_info_')) {
+        const zikrId = data.replace('zikr_info_', '');
+        const item = ZIKR_ITEMS.find(z => z.id === zikrId);
+        if (item) {
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `${item.label} — ${item.name}`);
+        } else {
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id);
+        }
+        return;
+    }
+    if (data === 'zikr_reset') {
+        const key = `zikr:${chatId}`;
+        await env.NOTIFICATIONS_KV.put(key, JSON.stringify({}));
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🔄 Sıfırlandı!');
+        let msg = `📿 <b>Rəqəmsal Təsbeh</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `Aşağıdakı düymələrə basaraq zikr edin.\n`;
+        msg += `Hər zikrin hədəfinə çatdıqda ✅ görünəcək.\n\n`;
+        msg += `🔢 Ümumi zikr sayı: <b>0</b>`;
+        await telegramEditMessage(botToken, chatId, messageId, msg, getZikrKeyboard({}));
         return;
     }
 
@@ -1522,6 +1888,9 @@ async function handleWebhook(request, env) {
     const text = message.text.trim();
     const botToken = env.BOT_TOKEN;
 
+    // ── İstifadəçini izlə (KV-yə yaz) ──
+    await trackUser(chatId, env, message.from);
+
     // ── /start ──
     if (text.startsWith('/start')) {
         await cmdStart(botToken, chatId, env);
@@ -1602,6 +1971,37 @@ async function handleWebhook(request, env) {
     // ── /dua ──
     if (text.startsWith('/dua')) {
         await cmdDua(botToken, chatId);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /cevir ──
+    if (text.startsWith('/cevir')) {
+        const dateText = text.replace(/^\/cevir\s*/, '').trim();
+        if (!dateText) {
+            const baku = getBakuNow();
+            await cmdCevir(botToken, chatId, baku.dateStr);
+        } else {
+            await cmdCevir(botToken, chatId, dateText);
+        }
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /hedis ──
+    if (text.startsWith('/hedis') || text.startsWith('/hadis')) {
+        await cmdHedis(botToken, chatId);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /zikr | /tesbeh ──
+    if (text.startsWith('/zikr') || text.startsWith('/tesbeh') || text.startsWith('/təsbeh')) {
+        await cmdZikr(botToken, chatId, env);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /broadcast (admin) ──
+    if (text.startsWith('/broadcast')) {
+        const messageText = text.replace(/^\/broadcast\s*/, '').trim();
+        await cmdBroadcast(botToken, chatId, messageText, env);
         return new Response('OK', { status: 200 });
     }
 
@@ -1773,6 +2173,268 @@ async function handleScheduled(env) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  ADMIN PANELİ — HTML & API
+// ═══════════════════════════════════════════════════════════════
+
+function getAdminLoginHTML() {
+    return `<!DOCTYPE html>
+<html lang="az"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel — Giriş</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;color:#e2e8f0}
+.card{background:rgba(30,41,59,.85);backdrop-filter:blur(12px);border:1px solid rgba(100,116,139,.3);border-radius:16px;padding:40px;width:100%;max-width:400px;box-shadow:0 25px 50px rgba(0,0,0,.4)}
+h1{text-align:center;font-size:24px;margin-bottom:8px}
+.sub{text-align:center;color:#94a3b8;margin-bottom:32px;font-size:14px}
+label{display:block;font-size:13px;color:#94a3b8;margin-bottom:6px}
+input{width:100%;padding:12px 16px;border:1px solid rgba(100,116,139,.4);border-radius:10px;background:rgba(15,23,42,.6);color:#e2e8f0;font-size:15px;outline:none;transition:border .2s}
+input:focus{border-color:#3b82f6}
+button{width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:20px;transition:opacity .2s}
+button:hover{opacity:.9}
+.err{color:#f87171;font-size:13px;text-align:center;margin-top:12px;display:none}
+</style></head><body>
+<div class="card">
+<h1>🕌 Admin Panel</h1>
+<p class="sub">Bakı Namaz Vaxtları Botu</p>
+<form id="f" onsubmit="return login(event)">
+<label>Şifrə</label>
+<input type="password" id="pw" placeholder="Admin şifrəsini daxil edin" autofocus>
+<button type="submit">Daxil ol</button>
+<p class="err" id="err">Şifrə yanlışdır!</p>
+</form></div>
+<script>
+async function login(e){
+e.preventDefault();const pw=document.getElementById('pw').value;
+const r=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+if(r.ok){window.location.href='/admin'}
+else{document.getElementById('err').style.display='block'}
+return false}
+</script></body></html>`;
+}
+
+function getAdminDashboardHTML() {
+    return `<!DOCTYPE html>
+<html lang="az"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel — Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e293b,#334155);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(100,116,139,.3)}
+.header h1{font-size:20px}
+.header .badge{background:#3b82f6;padding:4px 12px;border-radius:20px;font-size:12px}
+.logout{background:none;border:1px solid #ef4444;color:#ef4444;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px}
+.logout:hover{background:#ef4444;color:#fff}
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:rgba(30,41,59,.85);border:1px solid rgba(100,116,139,.2);border-radius:12px;padding:20px}
+.stat-card .num{font-size:32px;font-weight:700;color:#3b82f6}
+.stat-card .label{color:#94a3b8;font-size:13px;margin-top:4px}
+.section{background:rgba(30,41,59,.85);border:1px solid rgba(100,116,139,.2);border-radius:12px;padding:20px;margin-bottom:24px}
+.section h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(100,116,139,.3);color:#94a3b8;font-size:12px;text-transform:uppercase}
+td{padding:10px 12px;border-bottom:1px solid rgba(100,116,139,.1);font-size:14px}
+tr:hover td{background:rgba(59,130,246,.05)}
+.username{color:#3b82f6}
+textarea{width:100%;padding:12px;border:1px solid rgba(100,116,139,.3);border-radius:10px;background:rgba(15,23,42,.6);color:#e2e8f0;font-size:14px;resize:vertical;min-height:80px;outline:none}
+textarea:focus{border-color:#3b82f6}
+.btn{padding:10px 24px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px}
+.toast{position:fixed;top:20px;right:20px;background:#22c55e;color:#fff;padding:12px 20px;border-radius:10px;display:none;z-index:999;font-size:14px}
+.loading{color:#94a3b8;text-align:center;padding:40px;font-size:14px}
+</style></head><body>
+<div class="header">
+<div style="display:flex;align-items:center;gap:12px">
+<h1>🕌 Admin Panel</h1>
+<span class="badge">Bakı Namaz Bot</span>
+</div>
+<button class="logout" onclick="logout()">Çıxış</button>
+</div>
+<div class="container">
+<div class="stats">
+<div class="stat-card"><div class="num" id="totalUsers">-</div><div class="label">Ümumi İstifadəçi</div></div>
+<div class="stat-card"><div class="num" id="activeToday">-</div><div class="label">Bu gün aktiv</div></div>
+<div class="stat-card"><div class="num" id="activeWeek">-</div><div class="label">Bu həftə aktiv</div></div>
+</div>
+<div class="section">
+<h2>📢 Yayım Göndər</h2>
+<textarea id="bMsg" placeholder="Bütün istifadəçilərə göndəriləcək mesajı yazın..."></textarea>
+<div style="display:flex;gap:12px;margin-top:12px;align-items:center">
+<button class="btn btn-primary" onclick="sendBroadcast()">📤 Göndər</button>
+<span id="bStatus" style="color:#94a3b8;font-size:13px"></span>
+</div>
+</div>
+<div class="section">
+<h2>👥 İstifadəçilər</h2>
+<div id="userTable"><p class="loading">Yüklənir...</p></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+async function api(path,opts){
+const r=await fetch(path,opts);
+if(r.status===401){window.location.href='/admin';return null}
+return r.json()}
+function showToast(msg,color='#22c55e'){
+const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.style.display='block';
+setTimeout(()=>t.style.display='none',3000)}
+async function loadStats(){
+const d=await api('/api/stats');if(!d)return;
+document.getElementById('totalUsers').textContent=d.totalUsers;
+document.getElementById('activeToday').textContent=d.activeToday;
+document.getElementById('activeWeek').textContent=d.activeWeek}
+async function loadUsers(){
+const d=await api('/api/users');if(!d)return;
+if(!d.users||d.users.length===0){document.getElementById('userTable').innerHTML='<p style="color:#94a3b8">İstifadəçi tapılmadı.</p>';return}
+let h='<table><tr><th>Ad</th><th>Username</th><th>ID</th><th>Qoşulub</th><th>Son aktivlik</th></tr>';
+for(const u of d.users){
+const name=(u.firstName||'')+(u.lastName?' '+u.lastName:'');
+const uname=u.username?'<span class="username">@'+u.username+'</span>':'-';
+const joined=u.joined?new Date(u.joined).toLocaleDateString('az'):'?';
+const last=u.lastActive?timeAgo(u.lastActive):'?';
+h+='<tr><td>'+name+'</td><td>'+uname+'</td><td>'+u.id+'</td><td>'+joined+'</td><td>'+last+'</td></tr>'}
+h+='</table>';document.getElementById('userTable').innerHTML=h}
+function timeAgo(iso){
+const d=Date.now()-new Date(iso).getTime();const m=Math.floor(d/60000);
+if(m<1)return'indi';if(m<60)return m+' dəq əvvəl';
+const h=Math.floor(m/60);if(h<24)return h+' saat əvvəl';
+const days=Math.floor(h/24);return days+' gün əvvəl'}
+async function sendBroadcast(){
+const msg=document.getElementById('bMsg').value.trim();
+if(!msg){showToast('Mesaj boş ola bilməz!','#ef4444');return}
+document.getElementById('bStatus').textContent='Göndərilir...';
+const d=await api('/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+if(d){showToast('Göndərildi: '+d.sent+' | Uğursuz: '+d.failed);document.getElementById('bMsg').value='';document.getElementById('bStatus').textContent=''}
+else{document.getElementById('bStatus').textContent='Xəta baş verdi'}}
+async function logout(){
+await fetch('/admin/logout',{method:'POST'});window.location.href='/admin'}
+loadStats();loadUsers()
+</script></body></html>`;
+}
+
+// ── Admin Auth Helpers ──
+function getSessionFromCookie(request) {
+    const cookie = request.headers.get('Cookie') || '';
+    const match = cookie.match(/admin_session=([^;]+)/);
+    return match ? match[1] : null;
+}
+
+function makeSessionToken(password) {
+    // Sadə hash: real istifadə üçün yetərli
+    let hash = 0;
+    const str = 'nmz_admin_' + password + '_2026';
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+    }
+    return 'sess_' + Math.abs(hash).toString(36);
+}
+
+function isValidSession(request, env) {
+    const session = getSessionFromCookie(request);
+    if (!session || !env.ADMIN_PASSWORD) return false;
+    return session === makeSessionToken(env.ADMIN_PASSWORD);
+}
+
+// ── Admin API Endpoints ──
+async function handleAdminAPI(request, env, pathname) {
+    if (!isValidSession(request, env)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // GET /api/stats
+    if (pathname === '/api/stats' && request.method === 'GET') {
+        const countStr = await env.NOTIFICATIONS_KV.get('users:count');
+        const totalUsers = countStr ? parseInt(countStr, 10) : 0;
+
+        // Aktiv istifadəçiləri hesabla
+        const now = Date.now();
+        const todayMs = 24 * 60 * 60 * 1000;
+        const weekMs = 7 * todayMs;
+        let activeToday = 0;
+        let activeWeek = 0;
+
+        const result = await env.NOTIFICATIONS_KV.list({ prefix: 'user:', limit: 1000 });
+        for (const key of result.keys) {
+            if (key.name === 'users:count') continue;
+            const data = await env.NOTIFICATIONS_KV.get(key.name, 'json');
+            if (data && data.lastActive) {
+                const diff = now - new Date(data.lastActive).getTime();
+                if (diff < todayMs) activeToday++;
+                if (diff < weekMs) activeWeek++;
+            }
+        }
+
+        return new Response(JSON.stringify({ totalUsers, activeToday, activeWeek }), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // GET /api/users
+    if (pathname === '/api/users' && request.method === 'GET') {
+        const users = [];
+        let cursor = null;
+        do {
+            const result = await env.NOTIFICATIONS_KV.list({ prefix: 'user:', cursor, limit: 1000 });
+            for (const key of result.keys) {
+                if (key.name === 'users:count') continue;
+                const id = key.name.replace('user:', '');
+                const data = await env.NOTIFICATIONS_KV.get(key.name, 'json');
+                if (data && typeof data === 'object') {
+                    users.push({ id, ...data });
+                } else {
+                    users.push({ id, firstName: 'Naməlum', joined: data || '?', lastActive: null });
+                }
+            }
+            cursor = result.list_complete ? null : result.cursor;
+        } while (cursor);
+
+        // Son aktivliyə görə sırala
+        users.sort((a, b) => {
+            const ta = a.lastActive ? new Date(a.lastActive).getTime() : 0;
+            const tb = b.lastActive ? new Date(b.lastActive).getTime() : 0;
+            return tb - ta;
+        });
+
+        return new Response(JSON.stringify({ users }), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // POST /api/broadcast
+    if (pathname === '/api/broadcast' && request.method === 'POST') {
+        const body = await request.json();
+        const messageText = body.message;
+        if (!messageText) {
+            return new Response(JSON.stringify({ error: 'Mesaj boş' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+
+        const botToken = env.BOT_TOKEN;
+        const userIds = await getAllUserIds(env);
+        let sent = 0, failed = 0;
+        const broadcastMsg = `📢 <b>Elan:</b>\n━━━━━━━━━━━━━━━━━━━━━\n\n${messageText.trim()}`;
+
+        for (const uid of userIds) {
+            try {
+                await telegramSendMessage(botToken, uid, broadcastMsg);
+                sent++;
+            } catch (e) { failed++; }
+        }
+
+        return new Response(JSON.stringify({ sent, failed, total: userIds.length }), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    return new Response(JSON.stringify({ error: 'Not Found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  WORKER EXPORT
 // ═══════════════════════════════════════════════════════════════
 
@@ -1783,6 +2445,53 @@ export default {
         // POST /webhook → Telegram update
         if (request.method === 'POST' && url.pathname === '/webhook') {
             return handleWebhook(request, env);
+        }
+
+        // ── Admin Panel Routes ──
+        if (url.pathname === '/admin') {
+            if (isValidSession(request, env)) {
+                return new Response(getAdminDashboardHTML(), {
+                    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+                });
+            } else {
+                return new Response(getAdminLoginHTML(), {
+                    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+                });
+            }
+        }
+
+        if (url.pathname === '/admin/login' && request.method === 'POST') {
+            try {
+                const body = await request.json();
+                if (body.password === env.ADMIN_PASSWORD) {
+                    const token = makeSessionToken(env.ADMIN_PASSWORD);
+                    return new Response(JSON.stringify({ ok: true }), {
+                        status: 200,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Set-Cookie': `admin_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`,
+                        },
+                    });
+                } else {
+                    return new Response(JSON.stringify({ error: 'Wrong password' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+                }
+            } catch {
+                return new Response('Bad Request', { status: 400 });
+            }
+        }
+
+        if (url.pathname === '/admin/logout' && request.method === 'POST') {
+            return new Response(JSON.stringify({ ok: true }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Set-Cookie': 'admin_session=; Path=/; Max-Age=0',
+                },
+            });
+        }
+
+        // ── API Endpoints ──
+        if (url.pathname.startsWith('/api/')) {
+            return handleAdminAPI(request, env, url.pathname);
         }
 
         // GET / → Health check
@@ -1810,3 +2519,4 @@ export default {
         ctx.waitUntil(handleScheduled(env));
     },
 };
+

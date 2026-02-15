@@ -23,3 +23,8 @@ desktop.ini
 
 # Logs
 *.log
+
+# Agent / Test tools
+.testsprite/
+.gemini/
+.agent/

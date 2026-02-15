@@ -1,6 +1,6 @@
 # 🕌 Bakı Namaz Vaxtları — Telegram Bot
 
-Bakı şəhəri üçün namaz vaxtlarını bildirən, Ramazan rejimi və oruc izləmə sistemi olan Telegram botu.
+Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rejimi, oruc izləmə, rəqəmsal təsbeh, gündəlik hədis və admin paneli olan Telegram botu.
 **Cloudflare Workers** üzərində pulsuz işləyir — server lazım deyil.
 
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
@@ -44,6 +44,27 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Ramazan rejimi və oruc iz
 - 🧭 Qiblə istiqaməti (Google Maps linki ilə)
 - ⚙️ Fərdi bildiriş ayarları (hansı namazlar, hansı xatırlatmalar)
 
+### ☪️ Hicri Təqvim
+- Bütün namaz vaxtları mesajlarında Hicri tarix göstərilir
+- `/cevir` əmri ilə istənilən tarixi Hicri təqvimə çevirin
+
+### 📿 Rəqəmsal Təsbeh (Zikr)
+- Bot daxilində interaktiv zikr sayğacı
+- 6 fərqli zikr: SubhanAllah, Əlhəmdulillah, Allahu Əkbər, La iləhə illəllah, Əstağfirullah, Salavat
+- Hər zikr üçün hədəf sayı və progress göstəricisi
+
+### 📖 Günün Hədisi
+- Hər gün fərqli hədis/ayə mesajı
+- 60+ hədis və ayə bazası
+- Təsadüfi hədis düyməsi
+
+### 📢 Admin Sistemi & Veb Panel
+- İstifadəçi izləmə (ad, username, qoşulma tarixi KV-də saxlanılır)
+- `/broadcast` əmri ilə bütün istifadəçilərə toplu mesaj
+- 🔒 Şifrə ilə qorunan **Admin Web Panel** (`/admin`)
+- Dashboard: Ümumi istifadəçi sayı, aktiv istifadəçilər, istifadəçi cədvəli
+- Veb interfeysdən toplu yayım göndərmə
+
 ### 🖲️ İnteraktiv İnterfeys
 - İnline düymələr ilə tam idarə — əmr yazmağa ehtiyac yoxdur
 - Ramazan təqvimi səhifələmə (3 səhifə × 10 gün)
@@ -65,11 +86,16 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Ramazan rejimi və oruc iz
 | `/ramazan` | Ramazan təqvimi + oruc izləmə |
 | `/statistika` | Oruc statistikası və nailiyyətlər |
 | `/dua` | İftar / İmsak / Ramazan duaları |
+| `/zikr` | Rəqəmsal Təsbeh (sayğac) |
+| `/hedis` | Günün hədisi |
+| `/cevir` | Bugünkü Hicri tarix |
+| `/cevir 25.03.2026` | Miladi → Hicri çevirici |
 | `/qible` | Qiblə istiqaməti |
 | `/ayarlar` | Bildiriş ayarlarını idarə et |
+| `/broadcast <mesaj>` | Admin: Bütün istifadəçilərə mesaj (yalnız admin) |
 | `/help` | Bütün əmrlərin siyahısı |
 
-> 💡 **Alias-lar:** `/stats`, `/qibla`, `/komek`, `/kömək`, `/settings`
+> 💡 **Alias-lar:** `/stats`, `/qibla`, `/komek`, `/kömək`, `/settings`, `/hadis`, `/tesbeh`
 
 ---
 
@@ -94,8 +120,8 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Ramazan rejimi və oruc iz
 
 ### 1. Layihəni klonla
 ```bash
-git clone https://github.com/YOUR_USERNAME/baku-namaz-bot.git
-cd baku-namaz-bot
+git clone https://github.com/akm096/Baku-ucun-namaz-vaxti-botu.git
+cd Baku-ucun-namaz-vaxti-botu
 ```
 
 ### 2. Asılılıqları qur
@@ -120,7 +146,10 @@ npx wrangler secret put BOT_TOKEN
 # Soruşanda Telegram bot tokenini yapışdır
 
 npx wrangler secret put ALLOWED_CHAT_ID
-# Soruşanda chat/qrup ID-ni yaz
+# Soruşanda chat/qrup ID-ni yaz (admin əmrləri üçün)
+
+npx wrangler secret put ADMIN_PASSWORD
+# Soruşanda admin panel şifrəsini yaz
 ```
 
 > 💡 **Chat ID-ni tapmaq:** botu qrupa əlavə edib `/start` göndər, sonra `https://api.telegram.org/bot<TOKEN>/getUpdates` linkini açıb `chat.id` dəyərini tap.
@@ -142,20 +171,23 @@ curl "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://baku-namaz-
 ## 📁 Layihə Strukturu
 
 ```
-baku-namaz-bot/
+Baku-ucun-namaz-vaxti-botu/
 ├── src/
 │   └── worker.js          # Əsas Cloudflare Worker kodu
+│                            #   - Telegram Bot handler
+│                            #   - Admin Panel (HTML/JS)
+│                            #   - API endpoints
 ├── data/
 │   ├── 2026-01.json       # Yanvar namaz vaxtları
 │   ├── 2026-02.json       # Fevral namaz vaxtları
-│   └── ...                # Hər ay üçün ayrı JSON
+│   └── ...                # Hər ay üçün ayrı JSON (12 ay)
 ├── bot.js                 # ⚠️ Legacy Node.js versiya (istifadə olunmur)
 ├── wrangler.toml          # Cloudflare Workers konfiqurasiyası
 ├── package.json
 ├── DEPLOY.md              # Ətraflı deploy təlimatı
 ├── .env.example           # Nümunə environment dəyişənləri
 ├── .gitignore
-└── LICENSE
+└── LICENSE                # MIT
 ```
 
 ---
