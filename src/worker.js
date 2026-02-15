@@ -84,8 +84,8 @@ const MONTH_NAMES_REVERSE = {
 // bilinen Ramazan tarixlərini əl ilə qeyd edirik.
 // Hər il yenilənməlidir!
 const RAMADAN_DATES = {
-    2026: { start: { month: 2, day: 18 }, end: { month: 3, day: 19 } },
-    2027: { start: { month: 2, day: 8 }, end: { month: 3, day: 9 } },
+    2026: { start: { month: 2, day: 19 }, end: { month: 3, day: 19 } },
+    2027: { start: { month: 2, day: 8 }, end: { month: 3, day: 8 } },
 };
 
 // Ramazan Hicri il məlumatları
@@ -273,24 +273,24 @@ const QEZA_PRAYERS = [
 
 // ─── 2026 Dini Günlər Təqvimi ──────────────────────────────────
 const RELIGIOUS_DAYS_2026 = [
-    { date: '2026-01-16', name: '🌙 Rəcəb ayının başlanğıcı', desc: 'Üç mübarək ayın birincisi' },
-    { date: '2026-02-06', name: '✨ Rəcəb 21 — Rəğaib gecəsi', desc: 'İlk mübarək gecə' },
-    { date: '2026-02-14', name: '⭐ Merac Gecəsi (Rəcəb 27)', desc: 'Peyğəmbərin (s.ə.s.) Meraca yüksəldiyi gecə' },
-    { date: '2026-02-15', name: '🌙 Şaban ayının başlanğıcı', desc: 'Ramazandan əvvəlki ay' },
-    { date: '2026-03-01', name: '⭐ Bərat Gecəsi (Şaban 15)', desc: 'Bağışlanma gecəsi' },
-    { date: '2026-02-18', name: '🌙 Ramazan başlanğıcı', desc: '1447 Hicri — Oruc ayı' },
-    { date: '2026-03-15', name: '⭐ Qadr Gecəsi (təxmini)', desc: 'Min aydan xeyirli gecə' },
-    { date: '2026-03-20', name: '🎉 Ramazan Bayramı (1-ci gün)', desc: 'Fitr bayramı' },
-    { date: '2026-03-21', name: '🎉 Ramazan Bayramı (2-ci gün)', desc: 'Fitr bayramı' },
-    { date: '2026-03-22', name: '🎉 Ramazan Bayramı (3-cü gün)', desc: 'Fitr bayramı' },
-    { date: '2026-05-17', name: '🕋 Ərəfə günü', desc: 'Qurban bayramı ərəfəsi — oruc tutmaq savablıdır' },
-    { date: '2026-05-27', name: '🐑 Qurban Bayramı (1-ci gün)', desc: 'Zülhiccə 10 — Qurban kəsmə günü' },
-    { date: '2026-05-28', name: '🐑 Qurban Bayramı (2-ci gün)', desc: 'Təşriq günləri' },
-    { date: '2026-05-29', name: '🐑 Qurban Bayramı (3-cü gün)', desc: 'Təşriq günləri' },
-    { date: '2026-05-30', name: '🐑 Qurban Bayramı (4-cü gün)', desc: 'Təşriq günləri' },
-    { date: '2026-06-17', name: '☪️ Hicri Yeni İl (1448)', desc: 'Məhərrəm ayının başlanğıcı' },
-    { date: '2026-06-26', name: '📿 Aşura Günü (Məhərrəm 10)', desc: 'Hz. Hüseynin şəhadəti — oruc tutmaq savablıdır' },
-    { date: '2026-08-26', name: '🕌 Mövlud Gecəsi', desc: 'Peyğəmbərin (s.ə.s.) doğum gecəsi' },
+    { date: '2025-12-21', name: '🌙 Rəcəb ayının başlanğıcı', desc: 'Üç mübarək ayın birincisi (1 Rəcəb 1447)' },
+    { date: '2025-12-25', name: '✨ Rəğaib gecəsi', desc: 'Rəcəb ayının ilk cümə gecəsi (5 Rəcəb)' },
+    { date: '2026-01-16', name: '⭐ Merac Gecəsi (Rəcəb 27)', desc: 'Peyğəmbərin (s.ə.s.) Meraca yüksəldiyi gecə' },
+    { date: '2026-01-20', name: '🌙 Şaban ayının başlanğıcı', desc: 'Ramazandan əvvəlki ay (1 Şaban 1447)' },
+    { date: '2026-02-03', name: '⭐ Bərat Gecəsi (Şaban 15)', desc: 'Bağışlanma gecəsi' },
+    { date: '2026-02-19', name: '🌙 Ramazan başlanğıcı', desc: '1447 Hicri — Oruc ayı' },
+    { date: '2026-03-08', name: '⭐ Qadr Gecəsi (21-ci gecə)', desc: 'Ehtimal olunan Qadr gecələrindən biri' },
+    { date: '2026-03-10', name: '⭐ Qadr Gecəsi (23-cü gecə)', desc: 'Ehtimal olunan Qadr gecələrindən biri' },
+    { date: '2026-03-12', name: '⭐ Qadr Gecəsi (25-ci gecə)', desc: 'Ehtimal olunan Qadr gecələrindən biri' },
+    { date: '2026-03-16', name: '⭐ Qadr Gecəsi (27-ci gecə)', desc: 'Ən ehtimallı Qadr gecəsi — min aydan xeyirli' },
+    { date: '2026-03-20', name: '🎉 Ramazan Bayramı (1-ci gün)', desc: 'Fitr bayramı — rəsmi qeyri-iş günü' },
+    { date: '2026-03-21', name: '🎉 Ramazan Bayramı (2-ci gün)', desc: 'Fitr bayramı — rəsmi qeyri-iş günü' },
+    { date: '2026-05-26', name: '🕋 Ərəfə günü', desc: 'Qurban bayramı ərəfəsi — oruc tutmaq savablıdır' },
+    { date: '2026-05-27', name: '🐑 Qurban Bayramı (1-ci gün)', desc: 'Zülhiccə 10 — rəsmi qeyri-iş günü' },
+    { date: '2026-05-28', name: '🐑 Qurban Bayramı (2-ci gün)', desc: 'Təşriq günləri — rəsmi qeyri-iş günü' },
+    { date: '2026-06-16', name: '☪️ Hicri Yeni İl (1448)', desc: 'Məhərrəm ayının başlanğıcı' },
+    { date: '2026-06-25', name: '📿 Aşura Günü (Məhərrəm 10)', desc: 'Hz. Hüseynin şəhadəti — oruc tutmaq savablıdır' },
+    { date: '2026-08-25', name: '🕌 Mövlud Gecəsi', desc: 'Peyğəmbərin (s.ə.s.) doğum gecəsi (12 Rəbiül-əvvəl)' },
 ];
 
 // ─── Əsma-ül Hüsna (Allahın 99 Adı) ──────────────────────────
@@ -2135,7 +2135,7 @@ async function handleCallbackQuery(callbackQuery, env) {
         return;
     }
 
-        // ── Zikr sayğac düymələri ──
+    // ── Zikr sayğac düymələri ──
     if (data.startsWith('zikr_plus_')) {
         const zikrId = data.replace('zikr_plus_', '');
         const key = `zikr:${chatId}`;
@@ -2447,7 +2447,7 @@ async function handleWebhook(request, env) {
         return new Response('OK', { status: 200 });
     }
 
-        // ── /broadcast (admin) ──
+    // ── /broadcast (admin) ──
     if (text.startsWith('/broadcast')) {
         const messageText = text.replace(/^\/broadcast\s*/, '').trim();
         await cmdBroadcast(botToken, chatId, messageText, env);
