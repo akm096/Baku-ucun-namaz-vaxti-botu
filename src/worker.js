@@ -261,6 +261,155 @@ const ZIKR_ITEMS = [
     { id: 'salavat', label: 'صَلِّ عَلَى مُحَمَّدٍ', name: 'Salavat', target: 100 },
 ];
 
+// ─── Qəza Namazı Konfiqurasiyası ────────────────────────────────
+const QEZA_PRAYERS = [
+    { id: 'subh', name: '🌅 Sübh' },
+    { id: 'zohr', name: '☀️ Zöhr' },
+    { id: 'esr', name: '🌤️ Əsr' },
+    { id: 'meqrib', name: '🌇 Məğrib' },
+    { id: 'isha', name: '🌃 İşa' },
+    { id: 'vitr', name: '🌙 Vitr' },
+];
+
+// ─── 2026 Dini Günlər Təqvimi ──────────────────────────────────
+const RELIGIOUS_DAYS_2026 = [
+    { date: '2026-01-16', name: '🌙 Rəcəb ayının başlanğıcı', desc: 'Üç mübarək ayın birincisi' },
+    { date: '2026-02-06', name: '✨ Rəcəb 21 — Rəğaib gecəsi', desc: 'İlk mübarək gecə' },
+    { date: '2026-02-14', name: '⭐ Merac Gecəsi (Rəcəb 27)', desc: 'Peyğəmbərin (s.ə.s.) Meraca yüksəldiyi gecə' },
+    { date: '2026-02-15', name: '🌙 Şaban ayının başlanğıcı', desc: 'Ramazandan əvvəlki ay' },
+    { date: '2026-03-01', name: '⭐ Bərat Gecəsi (Şaban 15)', desc: 'Bağışlanma gecəsi' },
+    { date: '2026-02-18', name: '🌙 Ramazan başlanğıcı', desc: '1447 Hicri — Oruc ayı' },
+    { date: '2026-03-15', name: '⭐ Qadr Gecəsi (təxmini)', desc: 'Min aydan xeyirli gecə' },
+    { date: '2026-03-20', name: '🎉 Ramazan Bayramı (1-ci gün)', desc: 'Fitr bayramı' },
+    { date: '2026-03-21', name: '🎉 Ramazan Bayramı (2-ci gün)', desc: 'Fitr bayramı' },
+    { date: '2026-03-22', name: '🎉 Ramazan Bayramı (3-cü gün)', desc: 'Fitr bayramı' },
+    { date: '2026-05-17', name: '🕋 Ərəfə günü', desc: 'Qurban bayramı ərəfəsi — oruc tutmaq savablıdır' },
+    { date: '2026-05-27', name: '🐑 Qurban Bayramı (1-ci gün)', desc: 'Zülhiccə 10 — Qurban kəsmə günü' },
+    { date: '2026-05-28', name: '🐑 Qurban Bayramı (2-ci gün)', desc: 'Təşriq günləri' },
+    { date: '2026-05-29', name: '🐑 Qurban Bayramı (3-cü gün)', desc: 'Təşriq günləri' },
+    { date: '2026-05-30', name: '🐑 Qurban Bayramı (4-cü gün)', desc: 'Təşriq günləri' },
+    { date: '2026-06-17', name: '☪️ Hicri Yeni İl (1448)', desc: 'Məhərrəm ayının başlanğıcı' },
+    { date: '2026-06-26', name: '📿 Aşura Günü (Məhərrəm 10)', desc: 'Hz. Hüseynin şəhadəti — oruc tutmaq savablıdır' },
+    { date: '2026-08-26', name: '🕌 Mövlud Gecəsi', desc: 'Peyğəmbərin (s.ə.s.) doğum gecəsi' },
+];
+
+// ─── Əsma-ül Hüsna (Allahın 99 Adı) ──────────────────────────
+const ASMA_UL_HUSNA = [
+    { num: 1, ar: 'ٱللَّٰهُ', az: 'Allah', meaning: 'Yeganə ilah, hər şeyin yaradanı' },
+    { num: 2, ar: 'ٱلرَّحْمَٰنُ', az: 'Ər-Rəhman', meaning: 'Sonsuz mərhəmət sahibi' },
+    { num: 3, ar: 'ٱلرَّحِيمُ', az: 'Ər-Rəhim', meaning: 'Əbədi rəhm edən' },
+    { num: 4, ar: 'ٱلْمَلِكُ', az: 'Əl-Məlik', meaning: 'Mütləq hökmdarlıq sahibi' },
+    { num: 5, ar: 'ٱلْقُدُّوسُ', az: 'Əl-Quddus', meaning: 'Hər nöqsandan uzaq olan' },
+    { num: 6, ar: 'ٱلسَّلَامُ', az: 'Əs-Salam', meaning: 'Salamatlıq verən' },
+    { num: 7, ar: 'ٱلْمُؤْمِنُ', az: 'Əl-Mömin', meaning: 'Əmin-amanlıq bəxş edən' },
+    { num: 8, ar: 'ٱلْمُهَيْمِنُ', az: 'Əl-Müheymin', meaning: 'Hər şeyi nəzarət edən' },
+    { num: 9, ar: 'ٱلْعَزِيزُ', az: 'Əl-Əziz', meaning: 'Yenilməz qüdrət sahibi' },
+    { num: 10, ar: 'ٱلْجَبَّارُ', az: 'Əl-Cəbbar', meaning: 'İradəsini hər şeyə keçirən' },
+    { num: 11, ar: 'ٱلْمُتَكَبِّرُ', az: 'Əl-Mütəkəbbir', meaning: 'Uca və böyük olan' },
+    { num: 12, ar: 'ٱلْخَالِقُ', az: 'Əl-Xaliq', meaning: 'Hər şeyin yaradıcısı' },
+    { num: 13, ar: 'ٱلْبَارِئُ', az: 'Əl-Bari', meaning: 'Varlıqları nöqsansız yaradan' },
+    { num: 14, ar: 'ٱلْمُصَوِّرُ', az: 'Əl-Musavvir', meaning: 'Surət verən, şəkil yaradan' },
+    { num: 15, ar: 'ٱلْغَفَّارُ', az: 'Əl-Ğəffar', meaning: 'Çox bağışlayan' },
+    { num: 16, ar: 'ٱلْقَهَّارُ', az: 'Əl-Qəhhar', meaning: 'Hər şeyə qalib gələn' },
+    { num: 17, ar: 'ٱلْوَهَّابُ', az: 'Əl-Vəhhab', meaning: 'Qarşılıqsız verən' },
+    { num: 18, ar: 'ٱلرَّزَّاقُ', az: 'Ər-Rəzzaq', meaning: 'Ruzi verən' },
+    { num: 19, ar: 'ٱلْفَتَّاحُ', az: 'Əl-Fəttah', meaning: 'Hər şeyi açan' },
+    { num: 20, ar: 'ٱلْعَلِيمُ', az: 'Əl-Əlim', meaning: 'Hər şeyi bilən' },
+    { num: 21, ar: 'ٱلْقَابِضُ', az: 'Əl-Qabid', meaning: 'Daraldıan, sıxan' },
+    { num: 22, ar: 'ٱلْبَاسِطُ', az: 'Əl-Basit', meaning: 'Genişlədən, bollaşdıran' },
+    { num: 23, ar: 'ٱلْخَافِضُ', az: 'Əl-Xafid', meaning: 'Alçaldan' },
+    { num: 24, ar: 'ٱلرَّافِعُ', az: 'Ər-Rafi', meaning: 'Yüksəldən' },
+    { num: 25, ar: 'ٱلْمُعِزُّ', az: 'Əl-Müizz', meaning: 'İzzət verən, şərəfləndirən' },
+    { num: 26, ar: 'ٱلْمُذِلُّ', az: 'Əl-Müzill', meaning: 'Zəlil edən' },
+    { num: 27, ar: 'ٱلسَّمِيعُ', az: 'Əs-Səmi', meaning: 'Hər şeyi eşidən' },
+    { num: 28, ar: 'ٱلْبَصِيرُ', az: 'Əl-Basir', meaning: 'Hər şeyi görən' },
+    { num: 29, ar: 'ٱلْحَكَمُ', az: 'Əl-Hakəm', meaning: 'Hökm verən, hakim' },
+    { num: 30, ar: 'ٱلْعَدْلُ', az: 'Əl-Adl', meaning: 'Mütləq ədalətli' },
+    { num: 31, ar: 'ٱللَّطِيفُ', az: 'Əl-Lətif', meaning: 'Lütf sahibi, incəlik edən' },
+    { num: 32, ar: 'ٱلْخَبِيرُ', az: 'Əl-Xəbir', meaning: 'Hər şeydən xəbərdar olan' },
+    { num: 33, ar: 'ٱلْحَلِيمُ', az: 'Əl-Həlim', meaning: 'Səbirli, yumuşaq davranan' },
+    { num: 34, ar: 'ٱلْعَظِيمُ', az: 'Əl-Azim', meaning: 'Sonsuz böyüklük sahibi' },
+    { num: 35, ar: 'ٱلْغَفُورُ', az: 'Əl-Ğəfur', meaning: 'Bağışlaması bol olan' },
+    { num: 36, ar: 'ٱلشَّكُورُ', az: 'Əş-Şəkur', meaning: 'Az əmələ çox savab verən' },
+    { num: 37, ar: 'ٱلْعَلِيُّ', az: 'Əl-Əliyy', meaning: 'Ən uca, ən yüksək' },
+    { num: 38, ar: 'ٱلْكَبِيرُ', az: 'Əl-Kəbir', meaning: 'Böyüklükdə sonsuz' },
+    { num: 39, ar: 'ٱلْحَفِيظُ', az: 'Əl-Hafiz', meaning: 'Hər şeyi qoruyan' },
+    { num: 40, ar: 'ٱلْمُقِيتُ', az: 'Əl-Muqit', meaning: 'Qoruyub bəsləyən' },
+    { num: 41, ar: 'ٱلْحَسِيبُ', az: 'Əl-Hasib', meaning: 'Hesaba çəkən' },
+    { num: 42, ar: 'ٱلْجَلِيلُ', az: 'Əl-Cəlil', meaning: 'Cəlal sahibi, heybətli' },
+    { num: 43, ar: 'ٱلْكَرِيمُ', az: 'Əl-Kərim', meaning: 'Kərəm sahibi, əsirgəməyən' },
+    { num: 44, ar: 'ٱلرَّقِيبُ', az: 'Ər-Rəqib', meaning: 'Hər şeyi müşahidə edən' },
+    { num: 45, ar: 'ٱلْمُجِيبُ', az: 'Əl-Mücib', meaning: 'Duaları qəbul edən' },
+    { num: 46, ar: 'ٱلْوَاسِعُ', az: 'Əl-Vasi', meaning: 'Rəhməti geniş olan' },
+    { num: 47, ar: 'ٱلْحَكِيمُ', az: 'Əl-Həkim', meaning: 'Hikmət sahibi' },
+    { num: 48, ar: 'ٱلْوَدُودُ', az: 'Əl-Vədud', meaning: 'Çox sevən, sevdirən' },
+    { num: 49, ar: 'ٱلْمَجِيدُ', az: 'Əl-Məcid', meaning: 'Şərəf və izzət sahibi' },
+    { num: 50, ar: 'ٱلْبَاعِثُ', az: 'Əl-Bais', meaning: 'Ölüləri dirildən' },
+    { num: 51, ar: 'ٱلشَّهِيدُ', az: 'Əş-Şəhid', meaning: 'Hər şeyə şahid olan' },
+    { num: 52, ar: 'ٱلْحَقُّ', az: 'Əl-Haqq', meaning: 'Varlığı mütləq həqiqi olan' },
+    { num: 53, ar: 'ٱلْوَكِيلُ', az: 'Əl-Vəkil', meaning: 'Güvənilən, vəkil olan' },
+    { num: 54, ar: 'ٱلْقَوِيُّ', az: 'Əl-Qaviyy', meaning: 'Sonsuz güc sahibi' },
+    { num: 55, ar: 'ٱلْمَتِينُ', az: 'Əl-Mətin', meaning: 'Çox möhkəm, sarsılmaz' },
+    { num: 56, ar: 'ٱلْوَلِيُّ', az: 'Əl-Vəliyy', meaning: 'Dost, yardımçı' },
+    { num: 57, ar: 'ٱلْحَمِيدُ', az: 'Əl-Həmid', meaning: 'Tərifə layiq olan' },
+    { num: 58, ar: 'ٱلْمُحْصِي', az: 'Əl-Muhsi', meaning: 'Hər şeyi sayan' },
+    { num: 59, ar: 'ٱلْمُبْدِئُ', az: 'Əl-Mubdi', meaning: 'Yoxdan var edən' },
+    { num: 60, ar: 'ٱلْمُعِيدُ', az: 'Əl-Muid', meaning: 'Yenidən yaradan' },
+    { num: 61, ar: 'ٱلْمُحْيِي', az: 'Əl-Muhyi', meaning: 'Can verən, dirildən' },
+    { num: 62, ar: 'ٱلْمُمِيتُ', az: 'Əl-Mumit', meaning: 'Ölümü yaradan' },
+    { num: 63, ar: 'ٱلْحَيُّ', az: 'Əl-Hayy', meaning: 'Əbədi diri olan' },
+    { num: 64, ar: 'ٱلْقَيُّومُ', az: 'Əl-Qayyum', meaning: 'Hər şeyi ayaqda tutan' },
+    { num: 65, ar: 'ٱلْوَاجِدُ', az: 'Əl-Vacid', meaning: 'İstədiyini tapan' },
+    { num: 66, ar: 'ٱلْمَاجِدُ', az: 'Əl-Macid', meaning: 'Şanı uca olan' },
+    { num: 67, ar: 'ٱلْوَاحِدُ', az: 'Əl-Vahid', meaning: 'Tək olan' },
+    { num: 68, ar: 'ٱلصَّمَدُ', az: 'Əs-Saməd', meaning: 'Heç nəyə möhtac olmayan' },
+    { num: 69, ar: 'ٱلْقَادِرُ', az: 'Əl-Qadir', meaning: 'Hər şeyə gücü çatan' },
+    { num: 70, ar: 'ٱلْمُقْتَدِرُ', az: 'Əl-Muqtədir', meaning: 'Qüdrəti sonsuz olan' },
+    { num: 71, ar: 'ٱلْمُقَدِّمُ', az: 'Əl-Muqaddim', meaning: 'İstədiyini öndə edən' },
+    { num: 72, ar: 'ٱلْمُؤَخِّرُ', az: 'Əl-Muaxxir', meaning: 'İstədiyini geri buraxan' },
+    { num: 73, ar: 'ٱلْأَوَّلُ', az: 'Əl-Əvvəl', meaning: 'Başlanğıcı olmayan, ilk' },
+    { num: 74, ar: 'ٱلْآخِرُ', az: 'Əl-Axir', meaning: 'Sonu olmayan, son' },
+    { num: 75, ar: 'ٱلظَّاهِرُ', az: 'Əz-Zahir', meaning: 'Varlığı aşkar olan' },
+    { num: 76, ar: 'ٱلْبَاطِنُ', az: 'Əl-Batin', meaning: 'Gizli, dərk olunmayan' },
+    { num: 77, ar: 'ٱلْوَالِي', az: 'Əl-Vali', meaning: 'Hər şeyi idarə edən' },
+    { num: 78, ar: 'ٱلْمُتَعَالِي', az: 'Əl-Mütəali', meaning: 'Uca, hər şeydən yüksək' },
+    { num: 79, ar: 'ٱلْبَرُّ', az: 'Əl-Bərr', meaning: 'İyilik və lütf sahibi' },
+    { num: 80, ar: 'ٱلتَّوَّابُ', az: 'Ət-Təvvab', meaning: 'Tövbələri çox qəbul edən' },
+    { num: 81, ar: 'ٱلْمُنْتَقِمُ', az: 'Əl-Müntəqim', meaning: 'Ədalətlə cəzalandıran' },
+    { num: 82, ar: 'ٱلْعَفُوُّ', az: 'Əl-Afuvv', meaning: 'Affı çox olan' },
+    { num: 83, ar: 'ٱلرَّؤُوفُ', az: 'Ər-Rauf', meaning: 'Çox şəfqətli' },
+    { num: 84, ar: 'مَالِكُ ٱلْمُلْكِ', az: 'Malikül-Mülk', meaning: 'Mülkün mütləq sahibi' },
+    { num: 85, ar: 'ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ', az: 'Zül-Cəlali vəl-İkram', meaning: 'Cəlal və kərəm sahibi' },
+    { num: 86, ar: 'ٱلْمُقْسِطُ', az: 'Əl-Muqsit', meaning: 'Ədalətlə hökm edən' },
+    { num: 87, ar: 'ٱلْجَامِعُ', az: 'Əl-Cami', meaning: 'Bir araya gətirən, toplayan' },
+    { num: 88, ar: 'ٱلْغَنِيُّ', az: 'Əl-Ğaniyy', meaning: 'Heç nəyə ehtiyacı olmayan' },
+    { num: 89, ar: 'ٱلْمُغْنِي', az: 'Əl-Muğni', meaning: 'Zənginləşdirən' },
+    { num: 90, ar: 'ٱلْمَانِعُ', az: 'Əl-Mani', meaning: 'İstəmədiyi şeyə mane olan' },
+    { num: 91, ar: 'ٱلضَّارُّ', az: 'Əd-Darr', meaning: 'Zərər verən (imtahan üçün)' },
+    { num: 92, ar: 'ٱلنَّافِعُ', az: 'Ən-Nafi', meaning: 'Fayda verən' },
+    { num: 93, ar: 'ٱلنُّورُ', az: 'Ən-Nur', meaning: 'Aləmləri nurlandıran' },
+    { num: 94, ar: 'ٱلْهَادِي', az: 'Əl-Hadi', meaning: 'Hidayətə çatdıran' },
+    { num: 95, ar: 'ٱلْبَدِيعُ', az: 'Əl-Bədi', meaning: 'Nümunəsiz yaradan' },
+    { num: 96, ar: 'ٱلْبَاقِي', az: 'Əl-Baqi', meaning: 'Varlığı əbədi olan' },
+    { num: 97, ar: 'ٱلْوَارِثُ', az: 'Əl-Varis', meaning: 'Hər şeyin son sahibi' },
+    { num: 98, ar: 'ٱلرَّشِيدُ', az: 'Ər-Rəşid', meaning: 'Doğruya yönləndirən' },
+    { num: 99, ar: 'ٱلصَّبُورُ', az: 'Əs-Sabur', meaning: 'Çox səbirli olan' },
+];
+
+// ─── Cümə Təbrikləri ───────────────────────────────────────────
+const FRIDAY_MESSAGES = [
+    '🕌 Cümə mübarək!\n\n\"Cümə günü duaların qəbul olunduğu bir vaxt var. O vaxtda edilən dua rədd olunmaz.\" (Buxari)\n\n🤲 Allah dualarınızı qəbul etsin!',
+    '🌹 Xeyirli Cümə!\n\n\"Günəşin doğduğu ən xeyirli gün — Cümə günüdür.\" (Muslim)\n\n📿 Kəhf surəsini oxumağı unutmayın!',
+    '🕊️ Mübarək Cümə!\n\n\"Cümə günü mənə çox salavat göndərin. Çünki sizin salavatlarınız mənə çatdırılır.\" (Əbu Davud)\n\n🤲 Allahummə salli alə Muhammadin və alə ali Muhammad!',
+    '🌙 Cümə Mübarək!\n\n\"Kim Cümə günü qüsl edər, gözəl geyinər, ətir vurub məscidə gedər və imam xütbə oxuyarkən susarsa, iki Cümə arasındakı günahları bağışlanar.\" (Buxari)\n\n🕌 Haydi, Cümə namazına!',
+    '🌺 Mübarək Cümə olsun!\n\n\"Cümə günü Kəhf surəsini oxuyana növbəti Cüməyə qədər nur verilər.\" (Nəsai)\n\n📖 Kəhf surəsini oxudunuzmu?',
+    '✨ Cüməniz xeyirli olsun!\n\n\"Ən fəzilətli gün Cümə günüdür: Adəm o gün yaradılmış, o gün Cənnətə daxil olmuş və o gün Cənnətdən çıxarılmışdır.\" (Muslim)\n\n🤲 Allaha dua edin, dualarınız qəbuldur!',
+    '🌿 Xeyirli Cümə!\n\n\"Cümə günü elə bir saat var ki, mömin qul o saatda Allahdan nə istəsə, Allah ona verər.\" (Buxari və Muslim)\n\n⏰ O saatı qaçırmayın, dua edin!',
+    '☀️ Cümə günün mübarək!\n\n\"Üç Cüməni üzürsüz tərk edənin qəlbi möhürlənər.\" (Tirmizi)\n\n🕌 Cümə namazının fəzilətini boş buraxmayın!',
+    '🌸 Mübarək Cümə!\n\nBu gün içindən keçənlərə dua et,\nsənə dua edən qəlblər çox olsun.\nAllah sənə rahatlıq, hüzur,\nvə bərəkət nəsib etsin! 🤲',
+    '🕌 Hayırlı Cumalar!\n\n\"Cümə günü bütün günlərin seyyididir (ən üstünüdür).\" (İbn Macə)\n\n📿 Bu gün çox salavat gətirin!\nAllahummə salli alə Muhammad! 🤲',
+];
+
 // Defolt bildiriş ayarları
 const DEFAULT_SETTINGS = {
     reminder15: true,
@@ -641,6 +790,14 @@ function getMainMenuKeyboard() {
     keyboard.push([
         { text: '📿 Təsbeh', callback_data: 'cmd_zikr' },
         { text: '📖 Hədis', callback_data: 'cmd_hedis' },
+    ]);
+    keyboard.push([
+        { text: '🕌 Qəza', callback_data: 'cmd_qeza' },
+        { text: '📅 Təqvim', callback_data: 'cmd_teqvim' },
+    ]);
+    keyboard.push([
+        { text: '📿 Əsma', callback_data: 'cmd_asma' },
+        { text: '✨ Cümə', callback_data: 'cmd_cume' },
     ]);
     keyboard.push([
         { text: '🧭 Qiblə', callback_data: 'cmd_qible' },
@@ -1029,11 +1186,15 @@ async function cmdHelp(botToken, chatId) {
     msg += `  /dua — İftar/İmsak duaları\n\n`;
     msg += `� <b>İbadət:</b>\n`;
     msg += `  /zikr — Rəqəmsal Təsbeh (sayğac)\n`;
-    msg += `  /hedis — Günün hədisi\n\n`;
+    msg += `  /hedis — Günün hədisi\n`;
+    msg += `  /qeza — Qəza namazı hesablayıcısı\n`;
+    msg += `  /asma — Əsma-ül Hüsna (99 Ad)\n\n`;
     msg += `☪️ <b>Hicri Təqvim:</b>\n`;
     msg += `  /cevir — Bugünkü Hicri tarix\n`;
     msg += `  /cevir 25.03.2026 — Tarix çevirici\n\n`;
-    msg += `�📖 <b>Əlavə:</b>\n`;
+    msg += `📅 <b>Təqvim & Əlavə:</b>\n`;
+    msg += `  /teqvim — Dini günlər təqvimi\n`;
+    msg += `  /cume — Cümə təbrikləri\n`;
     msg += `  /qible — Qiblə istiqaməti\n`;
     msg += `  /ayarlar — Bildiriş ayarları\n`;
     msg += `  /help — Bu kömək mesajı\n\n`;
@@ -1520,6 +1681,179 @@ async function cmdZikr(botToken, chatId, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  QƏZA NAMAZI HESABLAYICISI
+// ═══════════════════════════════════════════════════════════════
+
+async function getMissedPrayers(chatId, env) {
+    const key = `missed:${chatId}`;
+    const data = await env.NOTIFICATIONS_KV.get(key, 'json');
+    if (!data) {
+        const defaults = {};
+        for (const p of QEZA_PRAYERS) { defaults[p.id] = 0; }
+        return defaults;
+    }
+    // Ensure all keys exist
+    for (const p of QEZA_PRAYERS) {
+        if (data[p.id] === undefined) data[p.id] = 0;
+    }
+    return data;
+}
+
+async function saveMissedPrayers(chatId, data, env) {
+    const key = `missed:${chatId}`;
+    await env.NOTIFICATIONS_KV.put(key, JSON.stringify(data));
+}
+
+function getQezaKeyboard(missed) {
+    const keyboard = [];
+    for (const p of QEZA_PRAYERS) {
+        const count = missed[p.id] || 0;
+        keyboard.push([
+            { text: `${p.name}: ${count}`, callback_data: 'noop' },
+            { text: '➖', callback_data: `qeza_sub_${p.id}` },
+            { text: '➕', callback_data: `qeza_add_${p.id}` },
+        ]);
+    }
+    keyboard.push([{ text: '🔄 Hamısını sıfırla', callback_data: 'qeza_reset' }]);
+    keyboard.push([{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }]);
+    return { inline_keyboard: keyboard };
+}
+
+async function cmdQeza(botToken, chatId, env) {
+    const missed = await getMissedPrayers(chatId, env);
+
+    let total = 0;
+    for (const p of QEZA_PRAYERS) { total += missed[p.id] || 0; }
+
+    let msg = `🕌 <b>Qəza Namazı Hesablayıcısı</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `Qılmadığınız namazların sayını izləyin.\n`;
+    msg += `➕ ilə artırın, ➖ ilə azaldın.\n\n`;
+    msg += `📊 Ümumi qəza borcu: <b>${total}</b> namaz\n\n`;
+    msg += `💡 <i>Hər qəza namazı qıldıqda ➖ basın.</i>`;
+
+    await telegramSendMessage(botToken, chatId, msg, getQezaKeyboard(missed));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DİNİ GÜNLƏR TƏQVİMİ
+// ═══════════════════════════════════════════════════════════════
+
+async function cmdTeqvim(botToken, chatId) {
+    const baku = getBakuNow();
+    const todayStr = `${baku.year}-${String(baku.month).padStart(2, '0')}-${String(baku.day).padStart(2, '0')}`;
+
+    let msg = `📅 <b>2026 Dini Günlər Təqvimi</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    let upcomingCount = 0;
+
+    for (const day of RELIGIOUS_DAYS_2026) {
+        const isPast = day.date < todayStr;
+        const isToday = day.date === todayStr;
+
+        // Tarix formatla
+        const parts = day.date.split('-');
+        const dateStr = `${parts[2]}.${parts[1]}.${parts[0]}`;
+
+        if (isToday) {
+            msg += `👉 <b>${day.name}</b>\n`;
+            msg += `    📅 ${dateStr} — <b>BU GÜN!</b>\n`;
+            msg += `    <i>${day.desc}</i>\n\n`;
+        } else if (isPast) {
+            msg += `✅ <s>${day.name}</s>\n`;
+            msg += `    📅 ${dateStr}\n\n`;
+        } else {
+            upcomingCount++;
+            // Neçə gün qaldığını hesabla
+            const targetDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const todayDate = new Date(baku.year, baku.month - 1, baku.day);
+            const diffDays = Math.ceil((targetDate - todayDate) / (24 * 60 * 60 * 1000));
+            msg += `⏳ <b>${day.name}</b>\n`;
+            msg += `    📅 ${dateStr} — <b>${diffDays} gün qalıb</b>\n`;
+            msg += `    <i>${day.desc}</i>\n\n`;
+        }
+    }
+
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `📍 Əsas: Qafqaz Müsəlmanları İdarəsi`;
+
+    await telegramSendMessage(botToken, chatId, msg, getBackKeyboard());
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ƏSMA-ÜL HÜSNA (99 AD)
+// ═══════════════════════════════════════════════════════════════
+
+async function cmdAsma(botToken, chatId) {
+    const randomIdx = Math.floor(Math.random() * ASMA_UL_HUSNA.length);
+    const name = ASMA_UL_HUSNA[randomIdx];
+
+    let msg = `📿 <b>Əsma-ül Hüsna — Allahın 99 Adı</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `<b>${name.num}/99</b>\n\n`;
+    msg += `<b>${name.ar}</b>\n\n`;
+    msg += `🔤 <b>${name.az}</b>\n\n`;
+    msg += `📖 <i>${name.meaning}</i>\n\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💡 Başqa ad üçün düyməyə basın.`;
+
+    const kb = {
+        inline_keyboard: [
+            [{ text: '📿 Başqa ad', callback_data: 'cmd_asma_random' }],
+            [{ text: '📋 Hamısını göstər (1-33)', callback_data: 'asma_list_1' }],
+            [{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }],
+        ],
+    };
+    await telegramSendMessage(botToken, chatId, msg, kb);
+}
+
+async function cmdAsmaList(botToken, chatId, page) {
+    const perPage = 33;
+    const start = (page - 1) * perPage;
+    const end = Math.min(start + perPage, 99);
+    const totalPages = 3;
+
+    let msg = `📿 <b>Əsma-ül Hüsna</b> (${start + 1}-${end}/99)\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    for (let i = start; i < end; i++) {
+        const n = ASMA_UL_HUSNA[i];
+        msg += `<b>${n.num}.</b> ${n.ar} — <b>${n.az}</b>\n    <i>${n.meaning}</i>\n\n`;
+    }
+
+    const navRow = [];
+    if (page > 1) navRow.push({ text: '◀️ Əvvəlki', callback_data: `asma_list_${page - 1}` });
+    if (page < totalPages) navRow.push({ text: 'Növbəti ▶️', callback_data: `asma_list_${page + 1}` });
+
+    const kb = {
+        inline_keyboard: [
+            navRow,
+            [{ text: '📿 Təsadüfi ad', callback_data: 'cmd_asma_random' }],
+            [{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }],
+        ],
+    };
+    await telegramSendMessage(botToken, chatId, msg, kb);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CÜMƏ TƏBRİKLƏRİ
+// ═══════════════════════════════════════════════════════════════
+
+async function cmdCume(botToken, chatId) {
+    const randomIdx = Math.floor(Math.random() * FRIDAY_MESSAGES.length);
+    const msg = FRIDAY_MESSAGES[randomIdx];
+
+    const kb = {
+        inline_keyboard: [
+            [{ text: '✨ Başqa təbrik', callback_data: 'cmd_cume_random' }],
+            [{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }],
+        ],
+    };
+    await telegramSendMessage(botToken, chatId, msg, kb);
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  İSTİFADƏÇİ İZLƏMƏ & BROADCAST
 // ═══════════════════════════════════════════════════════════════
 
@@ -1710,7 +2044,98 @@ async function handleCallbackQuery(callbackQuery, env) {
         return;
     }
 
-    // ── Zikr sayğac düymələri ──
+    // ── Yeni əmrlər: Qəza, Təqvim, Əsma, Cümə ──
+    if (data === 'cmd_qeza') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🕌 Qəza');
+        await cmdQeza(botToken, chatId, env);
+        return;
+    }
+    if (data === 'cmd_teqvim') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📅 Təqvim');
+        await cmdTeqvim(botToken, chatId);
+        return;
+    }
+    if (data === 'cmd_asma') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📿 Əsma');
+        await cmdAsma(botToken, chatId);
+        return;
+    }
+    if (data === 'cmd_asma_random') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📿 Başqa ad');
+        await cmdAsma(botToken, chatId);
+        return;
+    }
+    if (data.startsWith('asma_list_')) {
+        const page = parseInt(data.replace('asma_list_', ''), 10);
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `📋 Səhifə ${page}`);
+        await cmdAsmaList(botToken, chatId, page);
+        return;
+    }
+    if (data === 'cmd_cume' || data === 'cmd_cume_random') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '✨ Cümə');
+        await cmdCume(botToken, chatId);
+        return;
+    }
+
+    // ── Qəza namazı düymələri ──
+    if (data.startsWith('qeza_add_')) {
+        const prayerId = data.replace('qeza_add_', '');
+        const missed = await getMissedPrayers(chatId, env);
+        missed[prayerId] = (missed[prayerId] || 0) + 1;
+        await saveMissedPrayers(chatId, missed, env);
+        const prayerItem = QEZA_PRAYERS.find(p => p.id === prayerId);
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `➕ ${prayerItem ? prayerItem.name : prayerId}: ${missed[prayerId]}`);
+        let total = 0;
+        for (const p of QEZA_PRAYERS) { total += missed[p.id] || 0; }
+        let msg = `🕌 <b>Qəza Namazı Hesablayıcısı</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `Qılmadığınız namazların sayını izləyin.\n`;
+        msg += `➕ ilə artırın, ➖ ilə azaldın.\n\n`;
+        msg += `📊 Ümumi qəza borcu: <b>${total}</b> namaz\n\n`;
+        msg += `💡 <i>Hər qəza namazı qıldıqda ➖ basın.</i>`;
+        await telegramEditMessage(botToken, chatId, messageId, msg, getQezaKeyboard(missed));
+        return;
+    }
+    if (data.startsWith('qeza_sub_')) {
+        const prayerId = data.replace('qeza_sub_', '');
+        const missed = await getMissedPrayers(chatId, env);
+        if ((missed[prayerId] || 0) > 0) {
+            missed[prayerId] = missed[prayerId] - 1;
+            await saveMissedPrayers(chatId, missed, env);
+        }
+        const prayerItem = QEZA_PRAYERS.find(p => p.id === prayerId);
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `➖ ${prayerItem ? prayerItem.name : prayerId}: ${missed[prayerId]}`);
+        let total = 0;
+        for (const p of QEZA_PRAYERS) { total += missed[p.id] || 0; }
+        let msg = `🕌 <b>Qəza Namazı Hesablayıcısı</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `Qılmadığınız namazların sayını izləyin.\n`;
+        msg += `➕ ilə artırın, ➖ ilə azaldın.\n\n`;
+        msg += `📊 Ümumi qəza borcu: <b>${total}</b> namaz\n\n`;
+        msg += `💡 <i>Hər qəza namazı qıldıqda ➖ basın.</i>`;
+        await telegramEditMessage(botToken, chatId, messageId, msg, getQezaKeyboard(missed));
+        return;
+    }
+    if (data === 'qeza_reset') {
+        const defaults = {};
+        for (const p of QEZA_PRAYERS) { defaults[p.id] = 0; }
+        await saveMissedPrayers(chatId, defaults, env);
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🔄 Sıfırlandı!');
+        let msg = `🕌 <b>Qəza Namazı Hesablayıcısı</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `Qılmadığınız namazların sayını izləyin.\n`;
+        msg += `➕ ilə artırın, ➖ ilə azaldın.\n\n`;
+        msg += `📊 Ümumi qəza borcu: <b>0</b> namaz\n\n`;
+        msg += `💡 <i>Hər qəza namazı qıldıqda ➖ basın.</i>`;
+        await telegramEditMessage(botToken, chatId, messageId, msg, getQezaKeyboard(defaults));
+        return;
+    }
+    if (data === 'noop') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id);
+        return;
+    }
+
+        // ── Zikr sayğac düymələri ──
     if (data.startsWith('zikr_plus_')) {
         const zikrId = data.replace('zikr_plus_', '');
         const key = `zikr:${chatId}`;
@@ -1998,7 +2423,31 @@ async function handleWebhook(request, env) {
         return new Response('OK', { status: 200 });
     }
 
-    // ── /broadcast (admin) ──
+    // ── /qeza ──
+    if (text.startsWith('/qeza')) {
+        await cmdQeza(botToken, chatId, env);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /teqvim ──
+    if (text.startsWith('/teqvim')) {
+        await cmdTeqvim(botToken, chatId);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /asma ──
+    if (text.startsWith('/asma')) {
+        await cmdAsma(botToken, chatId);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /cume ──
+    if (text.startsWith('/cume') || text.startsWith('/cümə')) {
+        await cmdCume(botToken, chatId);
+        return new Response('OK', { status: 200 });
+    }
+
+        // ── /broadcast (admin) ──
     if (text.startsWith('/broadcast')) {
         const messageText = text.replace(/^\/broadcast\s*/, '').trim();
         await cmdBroadcast(botToken, chatId, messageText, env);

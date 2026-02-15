@@ -44,6 +44,26 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - 🧭 Qiblə istiqaməti (Google Maps linki ilə)
 - ⚙️ Fərdi bildiriş ayarları (hansı namazlar, hansı xatırlatmalar)
 
+### 🕌 Qəza Namazı Hesablayıcısı
+- Qılınmamış namazların qeydiyyatı (Sübh, Zöhr, Əsr, Məğrib, İşa, Vitr)
+- `+` və `-` düymələri ilə asan idarəetmə
+- Məlumatlar Cloudflare KV-də daimi saxlanılır
+
+### 📅 Dini Günlər Təqvimi
+- 2026-cı il üçün bütün İslam bayramları və mübarək gecələr
+- Keçmiş və gələcək tarixlərin avtomatik hesablanması
+- Qalan gün sayının göstərilməsi
+
+### 📿 Əsma-ül Hüsna (99 Ad)
+- Allahın 99 adı, ərəbcə yazılışı və mənası
+- Təsadüfi ad öyrənmə rejimi
+- Siyahı şəklində baxış
+
+### ✨ Cümə Təbrikləri
+- Cümə günləri üçün xüsusi təbrik mesajları
+- Hədis və dualarla zənginləşdirilmiş mətnlər
+- Dostlarla paylaşmaq üçün hazır format
+
 ### ☪️ Hicri Təqvim
 - Bütün namaz vaxtları mesajlarında Hicri tarix göstərilir
 - `/cevir` əmri ilə istənilən tarixi Hicri təqvimə çevirin
@@ -87,6 +107,10 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 | `/statistika` | Oruc statistikası və nailiyyətlər |
 | `/dua` | İftar / İmsak / Ramazan duaları |
 | `/zikr` | Rəqəmsal Təsbeh (sayğac) |
+| `/qeza` | Qəza namazı hesablayıcısı |
+| `/teqvim` | Dini günlər təqvimi (2026) |
+| `/asma` | Əsma-ül Hüsna (99 Ad) |
+| `/cume` | Cümə təbrikləri |
 | `/hedis` | Günün hədisi |
 | `/cevir` | Bugünkü Hicri tarix |
 | `/cevir 25.03.2026` | Miladi → Hicri çevirici |
