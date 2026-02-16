@@ -2,7 +2,7 @@
 //  Bakı Namaz Vaxtları Telegram Botu — Cloudflare Workers
 //  Pulsuz tier: Webhook + Cron Trigger + KV dedup
 //  Əmrlər: /start, /vaxtlar, /sabah, /heftelik, /tarix, /ay,
-//          /qible, /help, /ayarlar
+//          /help, /ayarlar
 //  Ramazan xüsusi rejimi + Inline düymələr
 // ═══════════════════════════════════════════════════════════════
 
@@ -780,32 +780,51 @@ function getMainMenuKeyboard() {
     if (hasRamadan) {
         keyboard.push([
             { text: '🌙 Ramazan', callback_data: 'cmd_ramazan' },
-            { text: '📊 Statistika', callback_data: 'cmd_stats' },
         ]);
+    }
+
+    keyboard.push([
+        { text: '⚙️ Ayarlar', callback_data: 'cmd_ayarlar' },
+        { text: '❓ Kömək', callback_data: 'cmd_help' },
+    ]);
+    keyboard.push([
+        { text: '➕ Daha çox', callback_data: 'cmd_more' },
+    ]);
+
+    return { inline_keyboard: keyboard };
+}
+
+function getSecondaryMenuKeyboard() {
+    const baku = getBakuNow();
+    const hasRamadan = !!RAMADAN_DATES[baku.year];
+
+    const keyboard = [
+        [
+            { text: '📿 Təsbeh', callback_data: 'cmd_zikr' },
+            { text: '📖 Hədis', callback_data: 'cmd_hedis' },
+        ],
+        [
+            { text: '🕌 Qəza', callback_data: 'cmd_qeza' },
+            { text: '📅 Təqvim', callback_data: 'cmd_teqvim' },
+        ],
+        [
+            { text: '📿 Əsma', callback_data: 'cmd_asma' },
+            { text: '✨ Cümə', callback_data: 'cmd_cume' },
+        ],
+        [
+            { text: '📅 Hicri', callback_data: 'cmd_cevir_today' },
+        ],
+    ];
+
+    if (hasRamadan) {
         keyboard.push([
+            { text: '📊 Statistika', callback_data: 'cmd_stats' },
             { text: '🤲 Dua', callback_data: 'cmd_dua' },
         ]);
     }
 
     keyboard.push([
-        { text: '📿 Təsbeh', callback_data: 'cmd_zikr' },
-        { text: '📖 Hədis', callback_data: 'cmd_hedis' },
-    ]);
-    keyboard.push([
-        { text: '🕌 Qəza', callback_data: 'cmd_qeza' },
-        { text: '📅 Təqvim', callback_data: 'cmd_teqvim' },
-    ]);
-    keyboard.push([
-        { text: '📿 Əsma', callback_data: 'cmd_asma' },
-        { text: '✨ Cümə', callback_data: 'cmd_cume' },
-    ]);
-    keyboard.push([
-        { text: '🧭 Qiblə', callback_data: 'cmd_qible' },
-        { text: '📅 Hicri', callback_data: 'cmd_cevir_today' },
-    ]);
-    keyboard.push([
-        { text: '⚙️ Ayarlar', callback_data: 'cmd_ayarlar' },
-        { text: '❓ Kömək', callback_data: 'cmd_help' },
+        { text: '🔙 Əsas menyu', callback_data: 'cmd_menu' },
     ]);
 
     return { inline_keyboard: keyboard };
@@ -831,6 +850,7 @@ function getSettingsKeyboard(settings) {
                 { text: `${yn(settings.prayers.meqrib)} Məğrib`, callback_data: 'set_p_meqrib' },
                 { text: `${yn(settings.prayers.isha)} İşa`, callback_data: 'set_p_isha' },
             ],
+            [{ text: '🔕 Bütün bildirişləri bağla', callback_data: 'set_notifications_off' }],
             [{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }],
         ],
     };
@@ -1158,18 +1178,7 @@ async function cmdAy(botToken, chatId, argText, env) {
     await telegramSendMessage(botToken, chatId, msg2, getBackKeyboard());
 }
 
-async function cmdQible(botToken, chatId) {
-    let msg = `🧭 <b>Qiblə İstiqaməti</b>\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    msg += `📍 <b>Bakı şəhəri üçün:</b>\n\n`;
-    msg += `🕋 Makkə istiqaməti: <b>186°</b>\n`;
-    msg += `🧭 Kompas: <b>Cənub-Cənub-Qərb (SSW)</b>\n\n`;
-    msg += `📏 Bakıdan Məkkəyə məsafə: <b>~2,440 km</b>\n\n`;
-    msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `💡 <i>Telefonunuzun kompas tətbiqini açıb\n186° istiqamətinə yönəlin.</i>\n\n`;
-    msg += `🕌 Qafqaz Müsəlmanları İdarəsi`;
-    await telegramSendMessage(botToken, chatId, msg, getBackKeyboard());
-}
+// Qiblə funksiyası silindi (v2.0 — sadələşdirilmə)
 
 async function cmdHelp(botToken, chatId) {
     let msg = `🕌 <b>Bot Əmrləri</b>\n`;
@@ -1184,7 +1193,7 @@ async function cmdHelp(botToken, chatId) {
     msg += `  /ramazan — Ramazan təqvimi + oruc izləmə\n`;
     msg += `  /statistika — Oruc statistikası\n`;
     msg += `  /dua — İftar/İmsak duaları\n\n`;
-    msg += `� <b>İbadət:</b>\n`;
+    msg += `📿 <b>İbadət:</b>\n`;
     msg += `  /zikr — Rəqəmsal Təsbeh (sayğac)\n`;
     msg += `  /hedis — Günün hədisi\n`;
     msg += `  /qeza — Qəza namazı hesablayıcısı\n`;
@@ -1195,7 +1204,6 @@ async function cmdHelp(botToken, chatId) {
     msg += `📅 <b>Təqvim & Əlavə:</b>\n`;
     msg += `  /teqvim — Dini günlər təqvimi\n`;
     msg += `  /cume — Cümə təbrikləri\n`;
-    msg += `  /qible — Qiblə istiqaməti\n`;
     msg += `  /ayarlar — Bildiriş ayarları\n`;
     msg += `  /help — Bu kömək mesajı\n\n`;
     msg += `🔔 <b>Avtomatik Bildirişlər:</b>\n`;
@@ -1975,9 +1983,12 @@ async function handleCallbackQuery(callbackQuery, env) {
         await cmdAy(botToken, chatId, '', env);
         return;
     }
-    if (data === 'cmd_qible') {
-        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🧭 Qiblə');
-        await cmdQible(botToken, chatId);
+    if (data === 'cmd_more') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '➕ Daha çox');
+        let msg = `➕ <b>Əlavə Funksiyalar</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `Aşağıdakı düymələrdən istifadə edin:`;
+        await telegramSendMessage(botToken, chatId, msg, getSecondaryMenuKeyboard());
         return;
     }
     if (data === 'cmd_help') {
@@ -2185,6 +2196,32 @@ async function handleCallbackQuery(callbackQuery, env) {
         return;
     }
 
+    if (data === 'set_notifications_off') {
+        const settings = await getSettings(chatId, env);
+        settings.reminder15 = false;
+        settings.reminder10 = false;
+        settings.reminder5 = false;
+        settings.reminderOnTime = false;
+        settings.morningSchedule = false;
+        settings.prayers.imsak = false;
+        settings.prayers.subh = false;
+        settings.prayers.zohr = false;
+        settings.prayers.esr = false;
+        settings.prayers.meqrib = false;
+        settings.prayers.isha = false;
+        await saveSettings(chatId, settings, env);
+
+        let msg = `⚙️ <b>Bildiriş Ayarları</b>\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `🔕 Bütün bildirişlər bağlandı!\n\n`;
+        msg += `Bildirişləri fərdiləşdirmək üçün\naşağıdakı düymələrə basın:\n\n`;
+        msg += `✅ = Aktiv  |  ❌ = Deaktiv`;
+
+        await telegramEditMessage(botToken, chatId, messageId, msg, getSettingsKeyboard(settings));
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🔕 Bütün bildirişlər bağlandı!');
+        return;
+    }
+
     if (data.startsWith('set_')) {
         const settings = await getSettings(chatId, env);
         let settingName = data.replace('set_', '');
@@ -2323,26 +2360,26 @@ async function handleWebhook(request, env) {
     }
 
     // ── /vaxtlar ──
-    if (text.startsWith('/vaxtlar')) {
+    if (text.startsWith('/vaxtlar') || text.startsWith('/bugün') || text.startsWith('/bugun') || text.startsWith('/today') || text.startsWith('/namaz')) {
         await cmdVaxtlar(botToken, chatId, env);
         return new Response('OK', { status: 200 });
     }
 
     // ── /sabah ──
-    if (text.startsWith('/sabah')) {
+    if (text.startsWith('/sabah') || text.startsWith('/tomorrow')) {
         await cmdSabah(botToken, chatId, env);
         return new Response('OK', { status: 200 });
     }
 
     // ── /heftelik ──
-    if (text.startsWith('/heftelik')) {
+    if (text.startsWith('/heftelik') || text.startsWith('/həftəlik') || text.startsWith('/weekly') || text.startsWith('/heftə')) {
         await cmdHeftelik(botToken, chatId, env);
         return new Response('OK', { status: 200 });
     }
 
     // ── /tarix ──
-    if (text.startsWith('/tarix')) {
-        const dateText = text.replace(/^\/tarix\s*/, '').trim();
+    if (text.startsWith('/tarix') || text.startsWith('/date')) {
+        const dateText = text.replace(/^\/(tarix|date)\s*/, '').trim();
         if (!dateText) {
             let reply = `ℹ️ <b>Tarix əmri istifadəsi:</b>\n\n`;
             reply += `/tarix 25.03.2026\n`;
@@ -2357,17 +2394,18 @@ async function handleWebhook(request, env) {
     }
 
     // ── /ay ──
+    if (text.startsWith('/ayliq') || text.startsWith('/aylıq') || text.startsWith('/monthly')) {
+        const argText = text.replace(/^\/(ayliq|ayl\u0131q|monthly)\s*/, '').trim();
+        await cmdAy(botToken, chatId, argText, env);
+        return new Response('OK', { status: 200 });
+    }
     if (text.startsWith('/ay')) {
         const argText = text.replace(/^\/ay\s*/, '').trim();
         await cmdAy(botToken, chatId, argText, env);
         return new Response('OK', { status: 200 });
     }
 
-    // ── /qible ──
-    if (text.startsWith('/qible') || text.startsWith('/qibla')) {
-        await cmdQible(botToken, chatId);
-        return new Response('OK', { status: 200 });
-    }
+    // /qible silindi — artıq dəstəklənmir
 
     // ── /help ──
     if (text.startsWith('/help') || text.startsWith('/komek') || text.startsWith('/kömək')) {
@@ -2382,7 +2420,7 @@ async function handleWebhook(request, env) {
     }
 
     // ── /ramazan ──
-    if (text.startsWith('/ramazan')) {
+    if (text.startsWith('/ramazan') || text.startsWith('/ramadan') || text.startsWith('/oruc')) {
         await cmdRamazan(botToken, chatId, env, 1);
         return new Response('OK', { status: 200 });
     }
@@ -2400,8 +2438,8 @@ async function handleWebhook(request, env) {
     }
 
     // ── /cevir ──
-    if (text.startsWith('/cevir')) {
-        const dateText = text.replace(/^\/cevir\s*/, '').trim();
+    if (text.startsWith('/cevir') || text.startsWith('/çevir') || text.startsWith('/hicri')) {
+        const dateText = text.replace(/^\/(cevir|\u00e7evir|hicri)\s*/, '').trim();
         if (!dateText) {
             const baku = getBakuNow();
             await cmdCevir(botToken, chatId, baku.dateStr);
@@ -2424,25 +2462,25 @@ async function handleWebhook(request, env) {
     }
 
     // ── /qeza ──
-    if (text.startsWith('/qeza')) {
+    if (text.startsWith('/qeza') || text.startsWith('/qəza')) {
         await cmdQeza(botToken, chatId, env);
         return new Response('OK', { status: 200 });
     }
 
     // ── /teqvim ──
-    if (text.startsWith('/teqvim')) {
+    if (text.startsWith('/teqvim') || text.startsWith('/təqvim') || text.startsWith('/calendar')) {
         await cmdTeqvim(botToken, chatId);
         return new Response('OK', { status: 200 });
     }
 
     // ── /asma ──
-    if (text.startsWith('/asma')) {
+    if (text.startsWith('/asma') || text.startsWith('/esma') || text.startsWith('/husna') || text.startsWith('/99')) {
         await cmdAsma(botToken, chatId);
         return new Response('OK', { status: 200 });
     }
 
     // ── /cume ──
-    if (text.startsWith('/cume') || text.startsWith('/cümə')) {
+    if (text.startsWith('/cume') || text.startsWith('/cümə') || text.startsWith('/friday') || text.startsWith('/juma')) {
         await cmdCume(botToken, chatId);
         return new Response('OK', { status: 200 });
     }

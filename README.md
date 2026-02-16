@@ -41,7 +41,6 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 
 ### 🤲 Dua & Əlavə
 - İftar, İmsak (Niyyət) və ümumi Ramazan duaları
-- 🧭 Qiblə istiqaməti (Google Maps linki ilə)
 - ⚙️ Fərdi bildiriş ayarları (hansı namazlar, hansı xatırlatmalar)
 
 ### 🕌 Qəza Namazı Hesablayıcısı
@@ -114,12 +113,27 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 | `/hedis` | Günün hədisi |
 | `/cevir` | Bugünkü Hicri tarix |
 | `/cevir 25.03.2026` | Miladi → Hicri çevirici |
-| `/qible` | Qiblə istiqaməti |
 | `/ayarlar` | Bildiriş ayarlarını idarə et |
 | `/broadcast <mesaj>` | Admin: Bütün istifadəçilərə mesaj (yalnız admin) |
 | `/help` | Bütün əmrlərin siyahısı |
 
-> 💡 **Alias-lar:** `/stats`, `/qibla`, `/komek`, `/kömək`, `/settings`, `/hadis`, `/tesbeh`
+> 💡 **Alias-lar:**
+> - `/vaxtlar` → `/bugün`, `/bugun`, `/today`, `/namaz`
+> - `/sabah` → `/tomorrow`
+> - `/heftelik` → `/həftəlik`, `/weekly`, `/heftə`
+> - `/ay` → `/aylıq`, `/ayliq`, `/monthly`
+> - `/tarix` → `/date`
+> - `/ramazan` → `/ramadan`, `/oruc`
+> - `/statistika` → `/stats`
+> - `/cevir` → `/çevir`, `/hicri`
+> - `/hedis` → `/hadis`
+> - `/zikr` → `/tesbeh`, `/təsbeh`
+> - `/qeza` → `/qəza`
+> - `/teqvim` → `/təqvim`, `/calendar`
+> - `/asma` → `/esma`, `/husna`, `/99`
+> - `/cume` → `/cümə`, `/friday`, `/juma`
+> - `/help` → `/komek`, `/kömək`
+> - `/ayarlar` → `/settings`
 
 ---
 
