@@ -83,6 +83,7 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - 🔒 Şifrə ilə qorunan **Admin Web Panel** (`/admin`)
 - Dashboard: Ümumi istifadəçi sayı, aktiv istifadəçilər, istifadəçi cədvəli
 - Veb interfeysdən toplu yayım göndərmə
+- 📡 **Kanal İdarəetməsi:** Admin `/kanal_ayarlar` gizli əmri ilə kanala gedən bildirişləri (İmsak, Sübh, İftar və s.) dərhal aktiv/deaktiv edə bilər.
 
 ### 🖲️ İnteraktiv İnterfeys
 - İnline düymələr ilə tam idarə — əmr yazmağa ehtiyac yoxdur

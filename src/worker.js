@@ -743,6 +743,68 @@ async function saveSettings(chatId, settings, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  KANAL BİLDİRİŞ AYARLARI (KV)
+// ═══════════════════════════════════════════════════════════════
+
+const CHANNEL_ID = '-1003722702390';
+
+const DEFAULT_CHANNEL_SETTINGS = {
+    imsak: true,
+    subh: true,
+    zohr: true,
+    esr: true,
+    meqrib: true,
+    isha: true,
+};
+
+async function getChannelSettings(env) {
+    const key = `channel_settings:${CHANNEL_ID}`;
+    const data = await env.NOTIFICATIONS_KV.get(key, 'json');
+    if (!data) return { ...DEFAULT_CHANNEL_SETTINGS };
+    return { ...DEFAULT_CHANNEL_SETTINGS, ...data };
+}
+
+async function saveChannelSettings(settings, env) {
+    const key = `channel_settings:${CHANNEL_ID}`;
+    await env.NOTIFICATIONS_KV.put(key, JSON.stringify(settings));
+}
+
+function getChannelSettingsKeyboard(settings) {
+    const labels = {
+        imsak: '🌙 İmsak',
+        subh: '🌅 Sübh',
+        zohr: '☀️ Zöhr',
+        esr: '🌤️ Əsr',
+        meqrib: '🌇 Məğrib',
+        isha: '🌃 İşa',
+    };
+    const keyboard = [];
+    for (const [key, label] of Object.entries(labels)) {
+        const icon = settings[key] ? '✅' : '❌';
+        keyboard.push([{ text: `${icon} ${label}`, callback_data: `chset_${key}` }]);
+    }
+    keyboard.push([{ text: '🔙 Əsas menyu', callback_data: 'cmd_menu' }]);
+    return { inline_keyboard: keyboard };
+}
+
+async function cmdChannelSettings(botToken, chatId, env) {
+    const allowedId = String(env.ALLOWED_CHAT_ID);
+    if (String(chatId) !== allowedId) {
+        return; // Heç cavab vermə — gizli əmr
+    }
+
+    const settings = await getChannelSettings(env);
+
+    let msg = `📡 <b>Kanal Bildiriş Ayarları</b>\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    msg += `Kanal: <code>${CHANNEL_ID}</code>\n\n`;
+    msg += `Hansı namaz vaxtlarında kanala\nbildiriş göndərilsin?\n\n`;
+    msg += `✅ = Aktiv  |  ❌ = Deaktiv`;
+
+    await telegramSendMessage(botToken, chatId, msg, getChannelSettingsKeyboard(settings));
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  ORUC STATUSU (KV)
 // ═══════════════════════════════════════════════════════════════
 
@@ -2320,6 +2382,37 @@ async function handleCallbackQuery(callbackQuery, env) {
         return;
     }
 
+    // ── Kanal ayarları toggle (gizli admin) ──
+    if (data.startsWith('chset_')) {
+        const allowedId = String(env.ALLOWED_CHAT_ID);
+        if (String(chatId) !== allowedId) {
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id);
+            return;
+        }
+
+        const prayer = data.replace('chset_', '');
+        const chSettings = await getChannelSettings(env);
+
+        if (chSettings.hasOwnProperty(prayer)) {
+            chSettings[prayer] = !chSettings[prayer];
+            await saveChannelSettings(chSettings, env);
+
+            const status = chSettings[prayer] ? '✅ Aktiv' : '❌ Deaktiv';
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `${status}`);
+
+            let msg = `📡 <b>Kanal Bildiriş Ayarları</b>\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            msg += `Kanal: <code>${CHANNEL_ID}</code>\n\n`;
+            msg += `Hansı namaz vaxtlarında kanala\nbildiriş göndərilsin?\n\n`;
+            msg += `✅ = Aktiv  |  ❌ = Deaktiv`;
+
+            await telegramEditMessage(botToken, chatId, messageId, msg, getChannelSettingsKeyboard(chSettings));
+        } else {
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id);
+        }
+        return;
+    }
+
     await telegramAnswerCallbackQuery(botToken, callbackQuery.id);
 }
 
@@ -2492,6 +2585,12 @@ async function handleWebhook(request, env) {
         return new Response('OK', { status: 200 });
     }
 
+    // ── /kanal_ayarlar (gizli admin) ──
+    if (text.startsWith('/kanal_ayarlar') || text.startsWith('/kanal')) {
+        await cmdChannelSettings(botToken, chatId, env);
+        return new Response('OK', { status: 200 });
+    }
+
     // Tanınmayan əmr
     return new Response('OK', { status: 200 });
 }
@@ -2654,6 +2753,45 @@ async function handleScheduled(env) {
                     console.log(`✅ Oruc sualı göndərildi: Ramazan ${ramDay}-ci gün`);
                 }
                 await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
+            }
+        }
+    }
+
+    // ── Kanal Bildirişləri (dinamik, admin idarəli) ──────────────
+    if (dayData) {
+        const chSettings = await getChannelSettings(env);
+        const activePrayers = Object.keys(chSettings).filter(k => chSettings[k]);
+
+        for (const prayer of activePrayers) {
+            const prayerTimeStr = dayData[prayer];
+            if (!prayerTimeStr) continue;
+
+            const prayerMinutes = timeToMinutes(prayerTimeStr, false);
+            const diff = prayerMinutes - currentMinutes;
+
+            if (diff === 0) {
+                const kvKey = `sent:${baku.isoDate}:channel:${prayer}`;
+                const alreadySent = await env.NOTIFICATIONS_KV.get(kvKey);
+
+                if (!alreadySent) {
+                    let msg;
+
+                    if (isRam && prayer === 'meqrib') {
+                        msg = `🌙🎉 <b>İFTAR VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 Bakı\n\n🤲 Allah orucunuzu qəbul etsin!\nBismillah, buyurun!`;
+                    } else if (isRam && prayer === 'imsak') {
+                        msg = `🌙 <b>İMSAK VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 Bakı\n\nOruc başlayır. Niyyət etməyi unutmayın!\n🤲 Allah qəbul etsin!`;
+                    } else {
+                        msg = `🕌 <b>${PRAYER_NAMES[prayer] || prayer} vaxtıdır!</b>\n\n🕐 ${prayerTimeStr}\n📍 Bakı\n\n🤲 Allah qəbul etsin!`;
+                    }
+
+                    try {
+                        await telegramSendMessage(botToken, CHANNEL_ID, msg);
+                        await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
+                        console.log(`✅ Kanala göndərildi: ${prayer} (${baku.isoDate})`);
+                    } catch (e) {
+                        console.error(`❌ Kanala göndərilmədi: ${prayer} — ${e}`);
+                    }
+                }
             }
         }
     }
