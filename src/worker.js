@@ -128,6 +128,7 @@ const LOCALES = {
             gecaYarisi: '🌑 Gecə yarısı',
         },
         weekdays: ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'],
+        weekdays_short: ['Baz', 'Ber', 'Çax', 'Çər', 'Cax', 'Cüm', 'Şən'],
         months_input: {
             'yanvar': 1, 'fevral': 2, 'mart': 3, 'aprel': 4,
             'may': 5, 'iyun': 6, 'iyul': 7, 'avqust': 8,
@@ -274,11 +275,13 @@ const LOCALES = {
             gecaYarisi: '🌑 Gece Yarısı',
         },
         weekdays: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
+        weekdays_short: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
         months_input: {
             'ocak': 1, 'şubat': 2, 'mart': 3, 'nisan': 4,
             'mayıs': 5, 'haziran': 6, 'temmuz': 7, 'ağustos': 8,
             'eylül': 9, 'ekim': 10, 'kasım': 11, 'aralık': 12,
-            'subat': 2, 'agustos': 8, 'mayis': 5,
+            'subat': 2, 'agustos': 8, 'mayis': 5, 'kasim': 11,
+            'eylul': 9, 'aralik': 12,
         },
         months_display: {
             1: 'Ocak', 2: 'Şubat', 3: 'Mart', 4: 'Nisan',
@@ -809,6 +812,14 @@ const RELIGIOUS_DAYS_2026 = [
     { date: '2026-08-25', name: '🕌 Mövlud Gecəsi', name_tr: '🕌 Mevlit Gecesi', desc: 'Peyğəmbərin (s.ə.s.) doğum gecəsi (12 Rəbiül-əvvəl)', desc_tr: 'Peygamber\'in (s.a.v.) doğum gecesi (12 Rebiülevvel)' },
 ];
 
+// Azərbaycan transkripsiyasini Türkcəyə çevir
+function azToTrTranscript(azName) {
+    return azName
+        .replace(/Ə/g, 'E').replace(/ə/g, 'e')
+        .replace(/X/g, 'H').replace(/x/g, 'h')
+        .replace(/Q/g, 'K').replace(/q/g, 'k');
+}
+
 // ─── Əsma-ül Hüsna (Allahın 99 Adı) ──────────────────────────
 const ASMA_UL_HUSNA = [
     { num: 1, ar: 'ٱللَّٰهُ', az: 'Allah', meaning: 'Yeganə ilah, hər şeyin yaradanı', meaning_tr: 'Tek ilah, her şeyin yaratıcısı' },
@@ -1216,7 +1227,7 @@ function getRamadanDayNumber(year, month, day) {
 /**
  * Ramazan ayının bütün günlərini qaytarır (data + prayer times).
  */
-async function getRamadanDays(year, env) {
+async function getRamadanDays(year, env, lang = 'az') {
     const ramadan = RAMADAN_DATES[year];
     if (!ramadan) return [];
 
@@ -1232,14 +1243,15 @@ async function getRamadanDays(year, env) {
         const cDay = currentDate.getDate();
 
         const dayData = await getDayData(cYear, cMonth, cDay, env);
-        const weekday = getWeekdayName(cYear, cMonth, cDay);
+        const locale = LOCALES[lang] || LOCALES.az;
+        const wdShort = locale.weekdays_short[currentDate.getDay()];
 
         days.push({
             ramadanDay: i + 1,
             hijriDate: `${i + 1} Ramazan ${hijriYear}`,
             gregorianDate: `${String(cDay).padStart(2, '0')}.${String(cMonth).padStart(2, '0')}.${cYear}`,
             gregorianShort: `${String(cDay).padStart(2, '0')}.${String(cMonth).padStart(2, '0')}`,
-            weekday: weekday.substring(0, 3),
+            weekday: wdShort,
             year: cYear,
             month: cMonth,
             day: cDay,
@@ -1599,7 +1611,7 @@ function formatPrayerTimesMessage(dayData, dateStr, currentMinutes, title, ramad
 
     const dateParts = dateStr.split('.');
     const hijriStr = (dateParts.length === 3) ?
-        formatHijriDate(parseInt(dateParts[2]), parseInt(dateParts[1]), parseInt(dateParts[0])) : '';
+        formatHijriDate(parseInt(dateParts[2]), parseInt(dateParts[1]), parseInt(dateParts[0]), lang) : '';
 
     let msg = `${title}\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
@@ -1626,7 +1638,8 @@ function formatPrayerTimesMessage(dayData, dateStr, currentMinutes, title, ramad
 
     if (ramadanInfo && dayData.isha) {
         const teravihTime = calculateTeravihTime(dayData.isha);
-        if (teravihTime) msg += `  🕌 Teravih  —  ${teravihTime}\n`;
+        const teravihLabel = lang === 'tr' ? 'Teravih' : 'Təravih';
+        if (teravihTime) msg += `  🕌 ${teravihLabel}  —  ${teravihTime}\n`;
     }
 
     if (nextPrayer && minutesUntilNext !== null) {
@@ -1713,13 +1726,14 @@ function parseDate(text, currentYear) {
         return { day: parseInt(match[1], 10), month: parseInt(match[2], 10), year: currentYear };
     }
 
-    // DD AY_ADI [IL]
-    match = text.match(/^(\d{1,2})\s+([a-zçşğüöıə]+)(?:\s+(\d{4}))?$/);
+    // DD AY_ADI [IL] — hər iki dildə (AZ + TR)
+    match = text.match(/^(\d{1,2})\s+([a-zçşğüöıəi̇]+)(?:\s+(\d{4}))?$/);
     if (match) {
         const day = parseInt(match[1], 10);
         const monthName = match[2];
         const year = match[3] ? parseInt(match[3], 10) : currentYear;
-        const monthNum = MONTH_NAMES_AZ[monthName];
+        // Əvvəl AZ, sonra TR ay adlarını yoxla
+        const monthNum = LOCALES.az.months_input[monthName] || LOCALES.tr.months_input[monthName];
         if (monthNum) {
             return { day, month: monthNum, year };
         }
@@ -1899,30 +1913,63 @@ async function cmdHelp(botToken, chatId, env) {
     const lang = settings.language || 'az';
     let msg = `🕌 <b>${lang === 'tr' ? 'Bot Komutları' : 'Bot Əmrləri'}</b>\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    msg += `📅 <b>${lang === 'tr' ? 'Namaz Vakitleri:' : 'Namaz Vaxtları:'}</b>\n`;
-    msg += `  /vaxtlar — ${lang === 'tr' ? 'Bugünkü vakitler' : 'Bugünkü vaxtlar'}\n`;
-    msg += `  /sabah — ${lang === 'tr' ? 'Yarınki vakitler' : 'Sabahkı vaxtlar'}\n`;
-    msg += `  /heftelik — ${lang === 'tr' ? '7 günlük takvim' : '7 günlük cədvəl'}\n`;
-    msg += `  /ay — ${lang === 'tr' ? 'Aylık takvim' : 'Aylıq cədvəl'}\n`;
-    msg += `  /tarix 25.03.2026\n\n`;
-    msg += `🌙 <b>Ramazan:</b>\n`;
-    msg += `  /ramazan — ${lang === 'tr' ? 'Ramazan takvimi' : 'Ramazan təqvimi'}\n`;
-    msg += `  /statistika — ${lang === 'tr' ? 'Oruç istatistikleri' : 'Oruc statistikası'}\n`;
-    msg += `  /dua — ${lang === 'tr' ? 'İftar/İmsak duaları' : 'İftar/İmsak duaları'}\n\n`;
-    msg += `📿 <b>${lang === 'tr' ? 'İbadet:' : 'İbadət:'}</b>\n`;
-    msg += `  /zikr — ${lang === 'tr' ? 'Dijital Tesbih' : 'Rəqəmsal Təsbeh'}\n`;
-    msg += `  /hedis — ${lang === 'tr' ? 'Günün hadisi' : 'Günün hədisi'}\n`;
-    msg += `  /qeza — ${lang === 'tr' ? 'Kaza namazı' : 'Qəza namazı'}\n`;
-    msg += `  /asma — ${lang === 'tr' ? 'Esma-ül Hüsna' : 'Əsma-ül Hüsna'}\n\n`;
-    msg += `☪️ <b>${lang === 'tr' ? 'Hicri Takvim:' : 'Hicri Təqvim:'}</b>\n`;
-    msg += `  /cevir — ${lang === 'tr' ? 'Bugünkü Hicri tarih' : 'Bugünkü Hicri tarix'}\n\n`;
-    msg += `⚙️ /ayarlar — ${lang === 'tr' ? 'Ayarlar' : 'Ayarlar'}\n`;
-    msg += `❓ /help — ${lang === 'tr' ? 'Bu yardım mesajı' : 'Bu kömək mesajı'}\n\n`;
-    msg += `🔔 <b>${lang === 'tr' ? 'Otomatik Bildirimler:' : 'Avtomatik Bildirişlər:'}</b>\n`;
-    msg += `  • ${lang === 'tr' ? 'Her namaza 15, 10, 5 dk kala' : 'Hər namaza 15, 10, 5 dəq qalmış'}\n`;
-    msg += `  • ${lang === 'tr' ? 'Vakit geldiğinde' : 'Namaz vaxtı gəldikdə'}\n`;
-    msg += `  • ${lang === 'tr' ? 'Her gün sabah 05:00\'de takvim' : 'Hər gün səhər 05:00-da cədvəl'}\n\n`;
-    msg += `💡 <i>${lang === 'tr' ? 'Aşağıdaki butonları da kullanabilirsiniz!' : 'Aşağıdakı düymələrdən də istifadə edə bilərsiniz!'}</i>`;
+    if (lang === 'tr') {
+        msg += `📅 <b>Namaz Vakitleri:</b>\n`;
+        msg += `  /namaz — Bugünkü vakitler\n`;
+        msg += `  /sabah — Yarınki vakitler\n`;
+        msg += `  /haftalik — 7 günlük takvim\n`;
+        msg += `  /aylik — Aylık takvim\n`;
+        msg += `  /tarih 25.03.2026\n\n`;
+        msg += `🌙 <b>Ramazan:</b>\n`;
+        msg += `  /ramazan — Ramazan takvimi\n`;
+        msg += `  /istatistik — Oruç istatistikleri\n`;
+        msg += `  /dua — İftar/İmsak duaları\n\n`;
+        msg += `📿 <b>İbadet:</b>\n`;
+        msg += `  /tespih — Dijital Tesbih\n`;
+        msg += `  /hadis — Günün hadisi\n`;
+        msg += `  /kaza — Kaza namazı\n`;
+        msg += `  /asma — Esma-ül Hüsna\n\n`;
+        msg += `☪️ <b>Hicri Takvim:</b>\n`;
+        msg += `  /cevir — Bugünkü Hicri tarih\n\n`;
+        msg += `📅 <b>Diğer:</b>\n`;
+        msg += `  /takvim — Dini günler takvimi\n`;
+        msg += `  /cuma — Cuma tebriği\n\n`;
+        msg += `⚙️ /ayarlar — Ayarlar\n`;
+        msg += `❓ /yardim — Bu yardım mesajı\n\n`;
+        msg += `🔔 <b>Otomatik Bildirimler:</b>\n`;
+        msg += `  • Her namaza 15, 10, 5 dk kala\n`;
+        msg += `  • Vakit geldiğinde\n`;
+        msg += `  • Her gün sabah 05:00'de takvim\n\n`;
+        msg += `💡 <i>Aşağıdaki butonları da kullanabilirsiniz!</i>`;
+    } else {
+        msg += `📅 <b>Namaz Vaxtları:</b>\n`;
+        msg += `  /vaxtlar — Bugünkü vaxtlar\n`;
+        msg += `  /sabah — Sabahkı vaxtlar\n`;
+        msg += `  /heftelik — 7 günlük cədvəl\n`;
+        msg += `  /ay — Aylıq cədvəl\n`;
+        msg += `  /tarix 25.03.2026\n\n`;
+        msg += `🌙 <b>Ramazan:</b>\n`;
+        msg += `  /ramazan — Ramazan təqvimi\n`;
+        msg += `  /statistika — Oruc statistikası\n`;
+        msg += `  /dua — İftar/İmsak duaları\n\n`;
+        msg += `📿 <b>İbadət:</b>\n`;
+        msg += `  /zikr — Rəqəmsal Təsbeh\n`;
+        msg += `  /hedis — Günün hədisi\n`;
+        msg += `  /qeza — Qəza namazı\n`;
+        msg += `  /asma — Əsma-ül Hüsna\n\n`;
+        msg += `☪️ <b>Hicri Təqvim:</b>\n`;
+        msg += `  /cevir — Bugünkü Hicri tarix\n\n`;
+        msg += `📅 <b>Digər:</b>\n`;
+        msg += `  /teqvim — Dini günlər təqvimi\n`;
+        msg += `  /cume — Cümə təbriki\n\n`;
+        msg += `⚙️ /ayarlar — Ayarlar\n`;
+        msg += `❓ /help — Bu kömək mesajı\n\n`;
+        msg += `🔔 <b>Avtomatik Bildirişlər:</b>\n`;
+        msg += `  • Hər namaza 15, 10, 5 dəq qalmış\n`;
+        msg += `  • Namaz vaxtı gəldikdə\n`;
+        msg += `  • Hər gün səhər 05:00-da cədvəl\n\n`;
+        msg += `💡 <i>Aşağıdakı düymələrdən də istifadə edə bilərsiniz!</i>`;
+    }
     await telegramSendMessage(botToken, chatId, msg, getMainMenuKeyboard(lang));
 }
 
@@ -2165,7 +2212,7 @@ async function cmdRamazan(botToken, chatId, env, page = 1) {
         return;
     }
 
-    const ramadanDays = await getRamadanDays(year, env);
+    const ramadanDays = await getRamadanDays(year, env, lang);
     const fastingStatus = await getFastingStatus(chatId, year, env);
 
     // 3 səhifəyə böl (hər biri 10 gün)
@@ -2211,7 +2258,7 @@ async function cmdRamazanStats(botToken, chatId, env) {
         return;
     }
 
-    const ramadanDays = await getRamadanDays(year, env);
+    const ramadanDays = await getRamadanDays(year, env, lang);
     const fastingStatus = await getFastingStatus(chatId, year, env);
     const stats = calculateRamadanStats(fastingStatus, ramadanDays.length, year);
     const pct = stats.total > 0 ? Math.round((stats.fasted / stats.total) * 100) : 0;
@@ -2565,7 +2612,8 @@ async function cmdAsma(botToken, chatId, env) {
     msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
     msg += `<b>${name.num}/99</b>\n\n`;
     msg += `<b>${name.ar}</b>\n\n`;
-    msg += `🔤 <b>${name.az}</b>\n\n`;
+    const displayName = lang === 'tr' ? azToTrTranscript(name.az) : name.az;
+    msg += `🔤 <b>${displayName}</b>\n\n`;
     const meaningText = (lang === 'tr' && name.meaning_tr) ? name.meaning_tr : name.meaning;
     msg += `📖 <i>${meaningText}</i>\n\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n`;
@@ -2595,7 +2643,8 @@ async function cmdAsmaList(botToken, chatId, page, env) {
     for (let i = start; i < end; i++) {
         const n = ASMA_UL_HUSNA[i];
         const meaningText = (lang === 'tr' && n.meaning_tr) ? n.meaning_tr : n.meaning;
-        msg += `<b>${n.num}.</b> ${n.ar} — <b>${n.az}</b>\n    <i>${meaningText}</i>\n\n`;
+        const displayName = lang === 'tr' ? azToTrTranscript(n.az) : n.az;
+        msg += `<b>${n.num}.</b> ${n.ar} — <b>${displayName}</b>\n    <i>${meaningText}</i>\n\n`;
     }
 
     const navRow = [];
@@ -3408,7 +3457,7 @@ async function handleWebhook(request, env) {
     }
 
     // ── /zikr | /zikir | /tesbih ──
-    if (text.startsWith('/zikr') || text.startsWith('/tesbeh') || text.startsWith('/təsbeh') || text.startsWith('/zikir') || text.startsWith('/tesbih')) {
+    if (text.startsWith('/zikr') || text.startsWith('/tesbeh') || text.startsWith('/təsbeh') || text.startsWith('/zikir') || text.startsWith('/tesbih') || text.startsWith('/tespih')) {
         await cmdZikr(botToken, chatId, env);
         return new Response('OK', { status: 200 });
     }
