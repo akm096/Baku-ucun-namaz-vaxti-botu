@@ -1,6 +1,6 @@
 # 🕌 Bakı Namaz Vaxtları — Telegram Bot
 
-Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rejimi, oruc izləmə, rəqəmsal təsbeh, gündəlik hədis və admin paneli olan Telegram botu.
+Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rejimi, oruc izləmə, rəqəmsal təsbeh, gündəlik hədis və admin paneli olan **çoxdilli** (🇦🇿 Azərbaycanca / 🇹🇷 Türkcə) Telegram botu.
 **Cloudflare Workers** üzərində pulsuz işləyir — server lazım deyil.
 
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
@@ -54,9 +54,9 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - Qalan gün sayının göstərilməsi
 
 ### 📿 Əsma-ül Hüsna (99 Ad)
-- Allahın 99 adı, ərəbcə yazılışı və mənası
+- Allahın 99 adı, ərəbcə yazılışı və mənası (AZ + TR)
 - Təsadüfi ad öyrənmə rejimi
-- Siyahı şəklində baxış
+- Siyahı şəklində baxış (33-lük səhifələr)
 
 ### ✨ Cümə Təbrikləri
 - Cümə günləri üçün xüsusi təbrik mesajları
@@ -84,6 +84,13 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - Dashboard: Ümumi istifadəçi sayı, aktiv istifadəçilər, istifadəçi cədvəli
 - Veb interfeysdən toplu yayım göndərmə
 - 📡 **Kanal İdarəetməsi:** Admin `/kanal_ayarlar` gizli əmri ilə kanala gedən bildirişləri (İmsak, Sübh, İftar və s.) dərhal aktiv/deaktiv edə bilər.
+
+### 🌐 Çoxdilli Dəstək (i18n)
+- 🇦🇿 **Azərbaycanca** (default) və 🇹🇷 **Türkcə** interfeys
+- Bütün mesajlar, düymələr, toast bildirişləri lokalizasiya edilib
+- Ramazan hədisləri, nailiyyətlər, dini günlər, Əsma-ül Hüsna — hər iki dildə
+- İstifadəçi `/ayarlar` → Dil ilə dəyişdirə bilər
+- Türkcə əmr alias-ları: `/namaz`, `/tarih`, `/istatistik` və s.
 
 ### 🖲️ İnteraktiv İnterfeys
 - İnline düymələr ilə tam idarə — əmr yazmağa ehtiyac yoxdur
@@ -118,23 +125,23 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 | `/broadcast <mesaj>` | Admin: Bütün istifadəçilərə mesaj (yalnız admin) |
 | `/help` | Bütün əmrlərin siyahısı |
 
-> 💡 **Alias-lar:**
+> 💡 **Alias-lar (AZ/TR/EN):**
 > - `/vaxtlar` → `/bugün`, `/bugun`, `/today`, `/namaz`
-> - `/sabah` → `/tomorrow`
-> - `/heftelik` → `/həftəlik`, `/weekly`, `/heftə`
-> - `/ay` → `/aylıq`, `/ayliq`, `/monthly`
-> - `/tarix` → `/date`
-> - `/ramazan` → `/ramadan`, `/oruc`
-> - `/statistika` → `/stats`
+> - `/sabah` → `/tomorrow`, `/yarin`
+> - `/heftelik` → `/həftəlik`, `/weekly`, `/heftə`, `/haftalik`
+> - `/ay` → `/aylıq`, `/ayliq`, `/monthly`, `/aylik`
+> - `/tarix` → `/date`, `/tarih`
+> - `/ramazan` → `/ramadan`, `/oruc`, `/oruç`
+> - `/statistika` → `/stats`, `/istatistik`
 > - `/cevir` → `/çevir`, `/hicri`
-> - `/hedis` → `/hadis`
-> - `/zikr` → `/tesbeh`, `/təsbeh`
-> - `/qeza` → `/qəza`
-> - `/teqvim` → `/təqvim`, `/calendar`
+> - `/hedis` → `/hadis`, `/hadith`
+> - `/zikr` → `/tesbeh`, `/təsbeh`, `/tespih`
+> - `/qeza` → `/qəza`, `/kaza`
+> - `/teqvim` → `/təqvim`, `/calendar`, `/takvim`
 > - `/asma` → `/esma`, `/husna`, `/99`
-> - `/cume` → `/cümə`, `/friday`, `/juma`
-> - `/help` → `/komek`, `/kömək`
-> - `/ayarlar` → `/settings`
+> - `/cume` → `/cümə`, `/friday`, `/juma`, `/cuma`
+> - `/help` → `/komek`, `/kömək`, `/yardim`, `/yardım`
+> - `/ayarlar` → `/settings`, `/ayarlar`
 
 ---
 
