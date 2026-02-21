@@ -94,6 +94,13 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - İstifadəçi `/ayarlar` → Dil ilə dəyişdirə bilər
 - Türkcə əmr alias-ları: `/namaz`, `/tarih`, `/istatistik` və s.
 
+## 📍 Dəstəklənən Şəhərlər
+
+- **Azərbaycan**: Bakı, Gəncə
+- **Türkiyə**: Adana, Ankara, Antalya, Bursa, Diyarbakır, Erzurum, Eskişehir, Gaziantep, İstanbul, İzmir, Kayseri, Konya, Mersin, Samsun, Trabzon, Şanlıurfa, Van (və digər 81 vilayət)
+
+Şəhəri bot daxilində `/ayarlar` düyməsi ilə dəyişə bilərsiniz. Türkiyə vilayətlərinin məlumatı **Diyanət İşləri Başqanlığının** (API) təqviminə, Azərbaycan şəhərlərinin məlumatı isə **Qafqaz Müsəlmanları İdarəsinin** təqviminə əsaslanır.
+
 ### 🖲️ İnteraktiv İnterfeys
 - İnline düymələr ilə tam idarə — əmr yazmağa ehtiyac yoxdur
 - Ramazan təqvimi səhifələmə (3 səhifə × 10 gün)
