@@ -113,6 +113,18 @@ CITIES.baku = {
     authority_tr: 'Kafkasya Müslümanları İdaresi',
 };
 
+CITIES.gence = {
+    id: 'gence',
+    name_az: 'Gəncə',
+    name_tr: 'Gence',
+    country: 'Azerbaijan',
+    timezone: 'Asia/Baku',
+    source: 'bundled',
+    emoji: '🇦🇿',
+    authority_az: 'Qafqaz Müsəlmanları İdarəsi',
+    authority_tr: 'Kafkasya Müslümanları İdaresi',
+};
+
 // Türkiyə şəhərlərini CITIES-ə əlavə et
 for (const name of TURKEY_CITIES_LIST) {
     const id = name.toLowerCase()
@@ -123,7 +135,7 @@ for (const name of TURKEY_CITIES_LIST) {
 }
 
 // Ölkəyə görə şəhərlərin siyahısı
-const AZERBAIJAN_CITIES = ['baku'];
+const AZERBAIJAN_CITIES = ['baku', 'gence'];
 const TURKEY_CITIES = Object.keys(CITIES).filter(id => CITIES[id].country === 'Turkey');
 const CITIES_PER_PAGE = 12;
 
@@ -1142,15 +1154,15 @@ function getBakuDateOffset(offsetDays) {
     return getLocalDateOffset(offsetDays, 'baku');
 }
 
-async function getPrayerData(monthKey, env) {
-    const data = BUNDLED_DATA[monthKey];
+async function getPrayerData(monthKey, city = 'baku', env) {
+    const data = BUNDLED_DATA[city] ? BUNDLED_DATA[city][monthKey] : null;
     if (!data) return null;
     return data;
 }
 
-async function getDayData(year, month, day, env) {
+async function getDayData(year, month, day, city = 'baku', env) {
     const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-    const monthData = await getPrayerData(monthKey, env);
+    const monthData = await getPrayerData(monthKey, city, env);
     if (!monthData) return null;
     return monthData.days.find(d => d.day === day) || null;
 }
@@ -1222,8 +1234,8 @@ async function fetchMonthFromAladhanAPI(cityId, month, year) {
 async function getDayDataForCity(year, month, day, cityId, env) {
     const city = CITIES[cityId] || CITIES.baku;
 
-    if (city.source === 'bundled' || cityId === 'baku') {
-        return getDayData(year, month, day, env);
+    if (city.source === 'bundled' || (cityId === 'baku' || cityId === 'gence')) {
+        return getDayData(year, month, day, cityId, env);
     }
 
     if (city.source === 'api') {
@@ -1376,7 +1388,7 @@ async function getRamadanDays(year, env, lang = 'az') {
  * İstifadəçinin verilmiş Ramazan günü üçün oruc statusu qeyd edib-edə bilməyəcəyini yoxlayır.
  * @returns {boolean}
  */
-function canMarkFasting(ramadanDay, year) {
+function canMarkFasting(ramadanDay, year, cityId = 'baku') {
     const ramadan = RAMADAN_DATES[year];
     if (!ramadan) return false;
 
@@ -1401,7 +1413,8 @@ function canMarkFasting(ramadanDay, year) {
     // Cari gün — yalnız İftar vaxtından sonra
     // Cari gün üçün İftar (Məğrib) vaxtını tapmalıyıq
     const monthKey = `${targetYear}-${String(targetMonth).padStart(2, '0')}`;
-    const monthData = BUNDLED_DATA[monthKey];
+    const cityDataGroup = BUNDLED_DATA[cityId] || BUNDLED_DATA['baku'];
+    const monthData = cityDataGroup[monthKey];
     if (!monthData) return false;
 
     const dayEntry = monthData.days.find(d => d.day === targetDay);
