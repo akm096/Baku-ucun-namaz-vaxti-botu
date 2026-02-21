@@ -7,32 +7,61 @@
 // ═══════════════════════════════════════════════════════════════
 
 // ─── Bundled JSON data ─────────────────────────────────────────
-import data202601 from '../data/2026-01.json';
-import data202602 from '../data/2026-02.json';
-import data202603 from '../data/2026-03.json';
-import data202604 from '../data/2026-04.json';
-import data202605 from '../data/2026-05.json';
-import data202606 from '../data/2026-06.json';
-import data202607 from '../data/2026-07.json';
-import data202608 from '../data/2026-08.json';
-import data202609 from '../data/2026-09.json';
-import data202610 from '../data/2026-10.json';
-import data202611 from '../data/2026-11.json';
-import data202612 from '../data/2026-12.json';
+import data202601 from '../data/baku/2026-01.json';
+import data202602 from '../data/baku/2026-02.json';
+import data202603 from '../data/baku/2026-03.json';
+import data202604 from '../data/baku/2026-04.json';
+import data202605 from '../data/baku/2026-05.json';
+import data202606 from '../data/baku/2026-06.json';
+import data202607 from '../data/baku/2026-07.json';
+import data202608 from '../data/baku/2026-08.json';
+import data202609 from '../data/baku/2026-09.json';
+import data202610 from '../data/baku/2026-10.json';
+import data202611 from '../data/baku/2026-11.json';
+import data202612 from '../data/baku/2026-12.json';
+
+import gence202601 from '../data/gence/2026-01.json';
+import gence202602 from '../data/gence/2026-02.json';
+import gence202603 from '../data/gence/2026-03.json';
+import gence202604 from '../data/gence/2026-04.json';
+import gence202605 from '../data/gence/2026-05.json';
+import gence202606 from '../data/gence/2026-06.json';
+import gence202607 from '../data/gence/2026-07.json';
+import gence202608 from '../data/gence/2026-08.json';
+import gence202609 from '../data/gence/2026-09.json';
+import gence202610 from '../data/gence/2026-10.json';
+import gence202611 from '../data/gence/2026-11.json';
+import gence202612 from '../data/gence/2026-12.json';
 
 const BUNDLED_DATA = {
-    '2026-01': data202601,
-    '2026-02': data202602,
-    '2026-03': data202603,
-    '2026-04': data202604,
-    '2026-05': data202605,
-    '2026-06': data202606,
-    '2026-07': data202607,
-    '2026-08': data202608,
-    '2026-09': data202609,
-    '2026-10': data202610,
-    '2026-11': data202611,
-    '2026-12': data202612,
+    'baku': {
+        '2026-01': data202601,
+        '2026-02': data202602,
+        '2026-03': data202603,
+        '2026-04': data202604,
+        '2026-05': data202605,
+        '2026-06': data202606,
+        '2026-07': data202607,
+        '2026-08': data202608,
+        '2026-09': data202609,
+        '2026-10': data202610,
+        '2026-11': data202611,
+        '2026-12': data202612,
+    },
+    'gence': {
+        '2026-01': gence202601,
+        '2026-02': gence202602,
+        '2026-03': gence202603,
+        '2026-04': gence202604,
+        '2026-05': gence202605,
+        '2026-06': gence202606,
+        '2026-07': gence202607,
+        '2026-08': gence202608,
+        '2026-09': gence202609,
+        '2026-10': gence202610,
+        '2026-11': gence202611,
+        '2026-12': gence202612,
+    }
 };
 
 // ═══════════════════════════════════════════════════════════════
