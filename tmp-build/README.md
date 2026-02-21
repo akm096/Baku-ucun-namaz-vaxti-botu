@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "baku-namaz-bot" generated at 2026-02-18T20:47:49.635Z.

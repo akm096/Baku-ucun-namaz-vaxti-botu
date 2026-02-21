@@ -22,6 +22,7 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - Namaz vaxtı gəldikdə bildiriş
 - Hər gün səhər **05:00**-da avtomatik gündəlik cədvəl
 - Cloudflare KV ilə təkrar bildirişlərin qarşısının alınması (dedup)
+- 🌍 **Ağıllı Saat Qurşağı İdarəetməsi:** İstifadəçinin şəhərinə görə (məs. Türkiyə UTC+3, Bakı UTC+4) bildirişlərin gecikmə və ya tez getməsinin qarşısını alan avtomatik offset sistemi
 
 ### 🌙 Ramazan Rejimi
 - Ramazan ayında avtomatik aktivləşir

@@ -39,68 +39,64 @@ const BUNDLED_DATA = {
 //  SABİTLƏR
 // ═══════════════════════════════════════════════════════════════
 
-// ─── Şehir konfigürasyonu ──────────────────────────────────────
-const CITIES = {
-    istanbul: {
-        id: 'istanbul',
-        name_az: 'İstanbul',
-        name_tr: 'İstanbul',
-        country: 'Turkey',
-        timezone: 'Europe/Istanbul',
-        source: 'api',
-        method: 13,
-        emoji: '🇹🇷',
-        authority_az: 'Diyanət İşləri Başqanlığı',
-        authority_tr: 'Diyanet İşleri Başkanlığı',
-    },
-    ankara: {
-        id: 'ankara',
-        name_az: 'Ankara',
-        name_tr: 'Ankara',
-        country: 'Turkey',
-        timezone: 'Europe/Istanbul',
-        source: 'api',
-        method: 13,
-        emoji: '🇹🇷',
-        authority_az: 'Diyanət İşləri Başqanlığı',
-        authority_tr: 'Diyanet İşleri Başkanlığı',
-    },
-    izmir: {
-        id: 'izmir',
-        name_az: 'İzmir',
-        name_tr: 'İzmir',
-        country: 'Turkey',
-        timezone: 'Europe/Istanbul',
-        source: 'api',
-        method: 13,
-        emoji: '🇹🇷',
-        authority_az: 'Diyanət İşləri Başqanlığı',
-        authority_tr: 'Diyanet İşleri Başkanlığı',
-    },
-    konya: {
-        id: 'konya',
-        name_az: 'Konya',
-        name_tr: 'Konya',
-        country: 'Turkey',
-        timezone: 'Europe/Istanbul',
-        source: 'api',
-        method: 13,
-        emoji: '🇹🇷',
-        authority_az: 'Diyanət İşləri Başqanlığı',
-        authority_tr: 'Diyanet İşleri Başkanlığı',
-    },
-    baku: {
-        id: 'baku',
-        name_az: 'Bakı',
-        name_tr: 'Bakü',
-        country: 'Azerbaijan',
-        timezone: 'Asia/Baku',
-        source: 'bundled',
-        emoji: '🇦🇿',
-        authority_az: 'Qafqaz Müsəlmanları İdarəsi',
-        authority_tr: 'Kafkasya Müslümanları İdaresi',
-    },
+// ─── Şəhər konfigürasyonu ──────────────────────────────────────
+// Türkiyə şəhərləri əlifba sırası ilə
+const TR_CITY_TEMPLATE = {
+    country: 'Turkey',
+    timezone: 'Europe/Istanbul',
+    source: 'api',
+    method: 13,
+    emoji: '🇹🇷',
+    authority_az: 'Diyanət İşləri Başqanlığı',
+    authority_tr: 'Diyanet İşleri Başkanlığı',
 };
+
+function makeTrCity(id, name) {
+    return { id, name_az: name, name_tr: name, ...TR_CITY_TEMPLATE };
+}
+
+// Əlifba sırası ilə Türkiyənin 81 vilayəti
+const TURKEY_CITIES_LIST = [
+    'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Aksaray', 'Amasya', 'Ankara', 'Antalya',
+    'Ardahan', 'Artvin', 'Aydın', 'Balıkesir', 'Bartın', 'Batman', 'Bayburt', 'Bilecik',
+    'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa', 'Çanakkale', 'Çankırı', 'Çorum',
+    'Denizli', 'Diyarbakır', 'Düzce', 'Edirne', 'Elazığ', 'Erzincan', 'Erzurum', 'Eskişehir',
+    'Gaziantep', 'Giresun', 'Gümüşhane', 'Hakkari', 'Hatay', 'Iğdır', 'Isparta', 'İstanbul',
+    'İzmir', 'Kahramanmaraş', 'Karabük', 'Karaman', 'Kars', 'Kastamonu', 'Kayseri', 'Kırıkkale',
+    'Kırklareli', 'Kırşehir', 'Kilis', 'Kocaeli', 'Konya', 'Kütahya', 'Malatya', 'Manisa',
+    'Mardin', 'Mersin', 'Muğla', 'Muş', 'Nevşehir', 'Niğde', 'Ordu', 'Osmaniye',
+    'Rize', 'Sakarya', 'Samsun', 'Şanlıurfa', 'Siirt', 'Sinop', 'Sivas', 'Şırnak',
+    'Tekirdağ', 'Tokat', 'Trabzon', 'Tunceli', 'Uşak', 'Van', 'Yalova', 'Yozgat', 'Zonguldak',
+];
+
+const CITIES = {};
+
+// Azərbaycan şəhərləri
+CITIES.baku = {
+    id: 'baku',
+    name_az: 'Bakı',
+    name_tr: 'Bakü',
+    country: 'Azerbaijan',
+    timezone: 'Asia/Baku',
+    source: 'bundled',
+    emoji: '🇦🇿',
+    authority_az: 'Qafqaz Müsəlmanları İdarəsi',
+    authority_tr: 'Kafkasya Müslümanları İdaresi',
+};
+
+// Türkiyə şəhərlərini CITIES-ə əlavə et
+for (const name of TURKEY_CITIES_LIST) {
+    const id = name.toLowerCase()
+        .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u')
+        .replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g')
+        .replace(/â/g, 'a').replace(/î/g, 'i');
+    CITIES[id] = makeTrCity(id, name);
+}
+
+// Ölkəyə görə şəhərlərin siyahısı
+const AZERBAIJAN_CITIES = ['baku'];
+const TURKEY_CITIES = Object.keys(CITIES).filter(id => CITIES[id].country === 'Turkey');
+const CITIES_PER_PAGE = 12;
 
 const DEFAULT_CITY = 'baku';
 const DEFAULT_LANG = 'az';
@@ -190,6 +186,11 @@ const LOCALES = {
             city_select_title: '📍 <b>Şəhər Seçimi</b>',
             city_select_desc: 'Namaz vaxtları üçün şəhəri seçin:',
             city_changed: '✅ Şəhər dəyişdirildi: {city}',
+            country_select_title: '🌍 <b>Ölkə Seçimi</b>',
+            country_select_desc: 'Əvvəlcə ölkə seçin:',
+            city_page_info: 'Səhifə {page}/{total}',
+            dil_cmd_title: '🌐 <b>Dil Seçimi</b>',
+            dil_cmd_desc: 'Botun dilini seçin:',
             weekly_order: 'Sıra: İmsak | Sübh | Zöhr | Əsr | Məğrib | İşa',
             monthly_header: 'Gün  Sübh  Günçx Zöhr  Əsr   Məğr  İşa',
             ramadan_greet: '🌙 <b>Ramazan Mübarək!</b> ({day}-ci gün)',
@@ -252,6 +253,14 @@ const LOCALES = {
             toast_monthly: '🗓 Aylıq',
             toast_tesbeh: '📿 Təsbeh',
             toast_qaza: '🕌 Qəza',
+            // Gündəlik namaz izləyicisi
+            btn_namazlarim: '📋 Namazlarım',
+            namazlarim_title: '📋 Bugünkü Namazlar',
+            namazlarim_desc: 'Hər namazı qıldıqdan sonra ✅ basın.\nGün bitdikdə işarələnməmiş namazlar qəzaya düşür.',
+            prayer_done: '✅ {prayer} qılındı!',
+            prayer_undone: '↩️ {prayer} ləğv edildi',
+            namazlarim_alldone: '🎉 Bütün namazlar qılındı! Allah qəbul etsin! 🤲',
+            namazlarim_auto_qaza: '⚠️ Dünən {count} namaz qəzaya düşdü.',
         },
     },
     tr: {
@@ -339,6 +348,11 @@ const LOCALES = {
             city_select_title: '📍 <b>Şehir Seçimi</b>',
             city_select_desc: 'Namaz vakitleri için şehri seçin:',
             city_changed: '✅ Şehir değiştirildi: {city}',
+            country_select_title: '🌍 <b>Ülke Seçimi</b>',
+            country_select_desc: 'Önce ülke seçin:',
+            city_page_info: 'Sayfa {page}/{total}',
+            dil_cmd_title: '🌐 <b>Dil Seçimi</b>',
+            dil_cmd_desc: 'Botun dilini seçin:',
             weekly_order: 'Sıra: İmsak | Sabah | Öğle | İkindi | Akşam | Yatsı',
             monthly_header: 'Gün  Sabah Güneş Öğle  İknd  Akşm  Yatsı',
             ramadan_greet: '🌙 <b>Ramazan Mübarek!</b> ({day}. gün)',
@@ -401,6 +415,14 @@ const LOCALES = {
             toast_monthly: '🗓 Aylık',
             toast_tesbeh: '📿 Tesbih',
             toast_qaza: '🕌 Kaza',
+            // Günlük namaz takipçisi
+            btn_namazlarim: '📋 Namazlarım',
+            namazlarim_title: '📋 Bugünkü Namazlar',
+            namazlarim_desc: 'Her namazı kıldıktan sonra ✅ basın.\nGün bittiğinde işaretlenmemiş namazlar kazaya düşer.',
+            prayer_done: '✅ {prayer} kılındı!',
+            prayer_undone: '↩️ {prayer} iptal edildi',
+            namazlarim_alldone: '🎉 Tüm namazlar kılındı! Allah kabul etsin! 🤲',
+            namazlarim_auto_qaza: '⚠️ Dün {count} namaz kazaya düştü.',
         },
     },
 };
@@ -842,7 +864,7 @@ const ASMA_UL_HUSNA = [
     { num: 18, ar: 'ٱلرَّزَّاقُ', az: 'Ər-Rəzzaq', meaning: 'Ruzi verən', meaning_tr: 'Rızık veren' },
     { num: 19, ar: 'ٱلْفَتَّاحُ', az: 'Əl-Fəttah', meaning: 'Hər şeyi açan', meaning_tr: 'Her şeyi açan' },
     { num: 20, ar: 'ٱلْعَلِيمُ', az: 'Əl-Əlim', meaning: 'Hər şeyi bilən', meaning_tr: 'Her şeyi bilen' },
-    { num: 21, ar: 'ٱلْقَابِضُ', az: 'Əl-Qabid', meaning: 'Daraldıan, sıxan', meaning_tr: 'Daraltıp sıkan' },
+    { num: 21, ar: 'ٱلْقَابِضُ', az: 'Əl-Qabid', meaning: 'Daraldan, sıxan', meaning_tr: 'Daraltıp sıkan' },
     { num: 22, ar: 'ٱلْبَاسِطُ', az: 'Əl-Basit', meaning: 'Genişlədən, bollaşdıran', meaning_tr: 'Genişletip bollaştıran' },
     { num: 23, ar: 'ٱلْخَافِضُ', az: 'Əl-Xafid', meaning: 'Alçaldan', meaning_tr: 'Alçaltan' },
     { num: 24, ar: 'ٱلرَّافِعُ', az: 'Ər-Rafi', meaning: 'Yüksəldən', meaning_tr: 'Yükselten' },
@@ -1104,59 +1126,69 @@ async function getDayData(year, month, day, env) {
     return monthData.days.find(d => d.day === day) || null;
 }
 
-// ─── Aladhan API İnteqrasiyası ──────────────────────────────────
+// ─── Aladhan API İnteqrasiyası (Aylıq Calendar) ─────────────────
 
 /**
- * Aladhan API-dən namaz vaxtlarını çəkir.
- * @param {string} cityId - CITIES açarı (məs: 'konya')
- * @param {number} day
+ * Aladhan API-dən bütün ayın namaz vaxtlarını çəkir.
+ * /calendarByCity/{year}/{month} endpoint-i — bir dəfəyə 28-31 gün.
+ * @param {string} cityId - CITIES açarı (məs: 'istanbul')
  * @param {number} month
  * @param {number} year
- * @returns {Object|null} dayData formatında: {day, imsak, subh, gunCixir, zohr, esr, gunBatir, meqrib, isha, gecaYarisi}
+ * @returns {Array|null} dayData array formatında
  */
-async function fetchFromAladhanAPI(cityId, day, month, year) {
+async function fetchMonthFromAladhanAPI(cityId, month, year) {
     const city = CITIES[cityId];
     if (!city || city.source !== 'api') return null;
 
-    const dateStr = `${String(day).padStart(2, '0')}-${String(month).padStart(2, '0')}-${year}`;
-    const url = `http://api.aladhan.com/v1/timingsByCity/${dateStr}?city=${city.name_tr || city.name_az}&country=${city.country}&method=${city.method}`;
+    const url = `https://api.aladhan.com/v1/calendarByCity/${year}/${month}?city=${encodeURIComponent(city.name_tr || city.name_az)}&country=${encodeURIComponent(city.country)}&method=${city.method}`;
 
     try {
+        console.log(`Fetching month calendar from Aladhan: ${cityId} ${year}/${month}`);
         const response = await fetch(url);
         if (!response.ok) {
-            console.error(`Aladhan API Error: ${response.status}`);
+            console.error(`Aladhan Calendar API Error: ${response.status}`);
             return null;
         }
 
         const json = await response.json();
-        if (json.code !== 200 || !json.data || !json.data.timings) {
-            console.error(`Aladhan API bad response`);
+        if (json.code !== 200 || !json.data || !Array.isArray(json.data)) {
+            console.error(`Aladhan Calendar API bad response`);
             return null;
         }
 
-        const timings = json.data.timings;
+        // Bütün günləri öz formatımıza çevir
+        const days = json.data.map((entry) => {
+            const timings = entry.timings;
+            const gDate = entry.date.gregorian;
+            const dayNum = parseInt(gDate.day, 10);
 
-        // Aladhan API formatını öz formatımıza çevirir
-        return {
-            day: day,
-            imsak: timings.Imsak,
-            subh: timings.Fajr,
-            gunCixir: timings.Sunrise,
-            zohr: timings.Dhuhr,
-            esr: timings.Asr,
-            gunBatir: timings.Sunset,
-            meqrib: timings.Maghrib,
-            isha: timings.Isha,
-            gecaYarisi: timings.Midnight,
-        };
+            // Vaxtlardan timezone hissəsini sil (məs: "05:47 (+03)" → "05:47")
+            const cleanTime = (t) => t ? t.replace(/\s*\(.*\)/, '').trim() : '??:??';
+
+            return {
+                day: dayNum,
+                imsak: cleanTime(timings.Imsak),
+                subh: cleanTime(timings.Fajr),
+                gunCixir: cleanTime(timings.Sunrise),
+                zohr: cleanTime(timings.Dhuhr),
+                esr: cleanTime(timings.Asr),
+                gunBatir: cleanTime(timings.Sunset),
+                meqrib: cleanTime(timings.Maghrib),
+                isha: cleanTime(timings.Isha),
+                gecaYarisi: cleanTime(timings.Midnight),
+            };
+        });
+
+        return days;
     } catch (e) {
-        console.error(`Aladhan API fetch error: ${e}`);
+        console.error(`Aladhan Calendar API fetch error: ${e}`);
         return null;
     }
 }
 
 /**
  * Hibrid gün datası — şəhərə görə yerli JSON və ya API.
+ * API şəhərləri üçün bütün ayı bir dəfəyə çəkib KV-da saxlayır (30 gün).
  */
 async function getDayDataForCity(year, month, day, cityId, env) {
     const city = CITIES[cityId] || CITIES.baku;
@@ -1166,21 +1198,65 @@ async function getDayDataForCity(year, month, day, cityId, env) {
     }
 
     if (city.source === 'api') {
-        // KV cache ilə yoxla
-        const cacheKey = `api_cache:${cityId}:${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+        const cacheKey = `api_cache:${cityId}:${monthKey}`;
+
+        // KV-dan aylıq cache-i yoxla
+        let monthDays = null;
         try {
-            const cached = await env.NOTIFICATIONS_KV.get(cacheKey, 'json');
-            if (cached) return cached;
+            monthDays = await env.NOTIFICATIONS_KV.get(cacheKey, 'json');
         } catch { /* cache miss */ }
 
-        const data = await fetchFromAladhanAPI(cityId, day, month, year);
-        if (data) {
-            // 12 saat keşlə
-            try {
-                await env.NOTIFICATIONS_KV.put(cacheKey, JSON.stringify(data), { expirationTtl: 43200 });
-            } catch { /* KV xətası */ }
+        // Cache yoxdursa, API-dən çək
+        if (!monthDays) {
+            monthDays = await fetchMonthFromAladhanAPI(cityId, month, year);
+            if (monthDays) {
+                // 30 gün keşlə (2592000 saniyə)
+                try {
+                    await env.NOTIFICATIONS_KV.put(cacheKey, JSON.stringify(monthDays), { expirationTtl: 2592000 });
+                } catch { /* KV xətası */ }
+            }
         }
-        return data;
+
+        if (!monthDays) return null;
+        return monthDays.find(d => d.day === day) || null;
+    }
+
+    return null;
+
+}
+
+/**
+ * API şəhərləri üçün aylıq datanı qaytarır (bundled-a bənzər format).
+ */
+async function getMonthDataForCity(year, month, cityId, env) {
+    const city = CITIES[cityId] || CITIES.baku;
+
+    if (city.source === 'bundled' || cityId === 'baku') {
+        const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+        return await getPrayerData(monthKey, env);
+    }
+
+    if (city.source === 'api') {
+        const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+        const cacheKey = `api_cache:${cityId}:${monthKey}`;
+
+        let monthDays = null;
+        try {
+            monthDays = await env.NOTIFICATIONS_KV.get(cacheKey, 'json');
+        } catch { /* cache miss */ }
+
+        if (!monthDays) {
+            monthDays = await fetchMonthFromAladhanAPI(cityId, month, year);
+            if (monthDays) {
+                try {
+                    await env.NOTIFICATIONS_KV.put(cacheKey, JSON.stringify(monthDays), { expirationTtl: 2592000 });
+                } catch { /* KV xətası */ }
+            }
+        }
+
+        if (!monthDays) return null;
+        return { days: monthDays };
     }
 
     return null;
@@ -1236,7 +1312,10 @@ async function getRamadanDays(year, env, lang = 'az') {
 
     const startDate = new Date(year, ramadan.start.month - 1, ramadan.start.day);
 
-    for (let i = 0; i < 30; i++) {
+    const endDate = new Date(year, ramadan.end.month - 1, ramadan.end.day);
+    const totalDays = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+
+    for (let i = 0; i < totalDays; i++) {
         const currentDate = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
         const cYear = currentDate.getFullYear();
         const cMonth = currentDate.getMonth() + 1;
@@ -1487,6 +1566,11 @@ function getMainMenuKeyboard(lang = 'az') {
             { text: t('btn_monthly', lang), callback_data: 'cmd_ay' },
         ],
     ];
+
+    // Namazlarım düyməsi (həmişə göstər)
+    keyboard.push([
+        { text: t('btn_namazlarim', lang), callback_data: 'cmd_namazlarim' },
+    ]);
 
     // Ramazan datası olan il üçün həmişə göstər
     if (hasRamadan) {
@@ -1878,16 +1962,7 @@ async function cmdAy(botToken, chatId, argText, env) {
         }
     }
 
-    // API şəhərlər üçün aylıq yoxdur hələlik, yalnız bundled
-    if (CITIES[cityId]?.source === 'api') {
-        const monthName = getMonthsDisplay(lang)[targetMonth] || targetMonth;
-        const noData = t('no_data_month', lang).replace('{month}', monthName).replace('{year}', targetYear);
-        await telegramSendMessage(botToken, chatId, `${noData}\n\n${lang === 'tr' ? 'API şehirler için aylık görünüm henüz desteklenmiyor.' : 'API şəhərlər üçün aylıq görünüş hələlik dəstəklənmir.'}`, getBackKeyboard(lang));
-        return;
-    }
-
-    const monthKey = `${targetYear}-${String(targetMonth).padStart(2, '0')}`;
-    const monthData = await getPrayerData(monthKey, env);
+    const monthData = await getMonthDataForCity(targetYear, targetMonth, cityId, env);
 
     if (!monthData || !monthData.days) {
         const monthName = getMonthsDisplay(lang)[targetMonth] || targetMonth;
@@ -2040,7 +2115,7 @@ function formatRamadanPage(days, fastingStatus, pageNum, totalPages, lang = 'az'
             if (canMark) {
                 statusIcon = '⬜';
             } else {
-                statusIcon = '🔲';
+                statusIcon = ' ';
             }
         }
 
@@ -2550,6 +2625,94 @@ async function cmdQeza(botToken, chatId, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  GÜNDƏLİK NAMAZ İZLƏYİCİSİ (TODO)
+// ═══════════════════════════════════════════════════════════════
+
+// İzlənən namazlar (imsak xaric — imsak namaz deyil)
+const TRACKED_PRAYERS = ['subh', 'zohr', 'esr', 'meqrib', 'isha'];
+
+async function getPrayerLog(chatId, dateStr, env) {
+    const key = `prayer_log:${chatId}:${dateStr}`;
+    const data = await env.NOTIFICATIONS_KV.get(key, 'json');
+    if (!data) {
+        const defaults = {};
+        for (const p of TRACKED_PRAYERS) { defaults[p] = null; } // null = hələ işarələnməyib
+        return defaults;
+    }
+    // Əksik açarları doldur
+    for (const p of TRACKED_PRAYERS) {
+        if (data[p] === undefined) data[p] = null;
+    }
+    return data;
+}
+
+async function savePrayerLog(chatId, dateStr, logData, env) {
+    const key = `prayer_log:${chatId}:${dateStr}`;
+    // 7 gün saxla
+    await env.NOTIFICATIONS_KV.put(key, JSON.stringify(logData), { expirationTtl: 604800 });
+}
+
+function getNamazlarimKeyboard(prayerLog, dateStr, lang = 'az') {
+    const pn = getPrayerNames(lang);
+    const keyboard = [];
+    const row1 = [];
+    const row2 = [];
+
+    for (let i = 0; i < TRACKED_PRAYERS.length; i++) {
+        const p = TRACKED_PRAYERS[i];
+        const status = prayerLog[p];
+        const icon = status === true ? '✅' : '❌';
+        const name = (pn[p] || p).replace(/^[^\s]+\s/, ''); // Emojini sil, ad qalsın
+        const btn = { text: `${icon} ${name}`, callback_data: `nlog_${p}_${dateStr}` };
+        if (i < 3) row1.push(btn);
+        else row2.push(btn);
+    }
+
+    keyboard.push(row1);
+    keyboard.push(row2);
+    keyboard.push([{ text: t('btn_back', lang), callback_data: 'cmd_menu' }]);
+
+    return { inline_keyboard: keyboard };
+}
+
+async function cmdNamazlarim(botToken, chatId, env) {
+    const settings = await getSettings(chatId, env);
+    const lang = settings.language || 'az';
+    const cityId = settings.city || 'baku';
+    const now = getLocalNow(cityId);
+    const dateStr = `${now.year}-${String(now.month).padStart(2, '0')}-${String(now.day).padStart(2, '0')}`;
+
+    const dayData = await getDayDataForCity(now.year, now.month, now.day, cityId, env);
+    const prayerLog = await getPrayerLog(chatId, dateStr, env);
+    const pn = getPrayerNames(lang);
+
+    let msg = `${t('namazlarim_title', lang)} — ${now.dateStr}\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    let doneCount = 0;
+    for (const p of TRACKED_PRAYERS) {
+        const status = prayerLog[p];
+        const icon = status === true ? '✅' : '❌';
+        const name = pn[p] || p;
+        const timeStr = dayData ? (dayData[p] || '??:??') : '??:??';
+        msg += `${icon} ${name}  ${timeStr}\n`;
+        if (status === true) doneCount++;
+    }
+
+    msg += `\n`;
+
+    if (doneCount === TRACKED_PRAYERS.length) {
+        msg += t('namazlarim_alldone', lang);
+    } else {
+        msg += t('namazlarim_desc', lang);
+    }
+
+    msg += `\n\n📍 ${getCityName(cityId, lang)}`;
+
+    await telegramSendMessage(botToken, chatId, msg, getNamazlarimKeyboard(prayerLog, dateStr, lang));
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  DİNİ GÜNLƏR TƏQVİMİ
 // ═══════════════════════════════════════════════════════════════
 
@@ -2811,13 +2974,70 @@ async function handleCallbackQuery(callbackQuery, env) {
         return;
     }
     if (data === 'cmd_more') {
-        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '➕');
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '➥');
         const settings = await getSettings(chatId, env);
         const lang = settings.language || 'az';
         let msg = `${t('more_title', lang)}\n`;
         msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
         msg += `${t('more_desc', lang)}`;
         await telegramSendMessage(botToken, chatId, msg, getSecondaryMenuKeyboard(lang));
+        return;
+    }
+    if (data === 'cmd_namazlarim') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📋');
+        await cmdNamazlarim(botToken, chatId, env);
+        return;
+    }
+    if (data.startsWith('nlog_')) {
+        // Format: nlog_{prayer}_{YYYY-MM-DD}
+        const parts = data.replace('nlog_', '').split('_');
+        const prayer = parts[0];
+        const logDate = parts.slice(1).join('-'); // YYYY-MM-DD
+        const settings = await getSettings(chatId, env);
+        const lang = settings.language || 'az';
+        const pn = getPrayerNames(lang);
+
+        const prayerLog = await getPrayerLog(chatId, logDate, env);
+
+        // Toggle: null/false → true, true → null
+        if (prayerLog[prayer] === true) {
+            prayerLog[prayer] = null;
+            const pName = pn[prayer] || prayer;
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id, t('prayer_undone', lang).replace('{prayer}', pName));
+        } else {
+            prayerLog[prayer] = true;
+            const pName = pn[prayer] || prayer;
+            await telegramAnswerCallbackQuery(botToken, callbackQuery.id, t('prayer_done', lang).replace('{prayer}', pName));
+        }
+        await savePrayerLog(chatId, logDate, prayerLog, env);
+
+        // Mesajı yenilə
+        const cityId = settings.city || 'baku';
+        const now = getLocalNow(cityId);
+        const dayData = await getDayDataForCity(now.year, now.month, now.day, cityId, env);
+
+        let doneCount = 0;
+        let msg = `${t('namazlarim_title', lang)} — ${now.dateStr}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+        for (const p of TRACKED_PRAYERS) {
+            const status = prayerLog[p];
+            const icon = status === true ? '✅' : '❌';
+            const name = pn[p] || p;
+            const timeStr = dayData ? (dayData[p] || '??:??') : '??:??';
+            msg += `${icon} ${name}  ${timeStr}\n`;
+            if (status === true) doneCount++;
+        }
+
+        msg += `\n`;
+        if (doneCount === TRACKED_PRAYERS.length) {
+            msg += t('namazlarim_alldone', lang);
+        } else {
+            msg += t('namazlarim_desc', lang);
+        }
+        msg += `\n\n📍 ${getCityName(cityId, lang)}`;
+
+        await telegramEditMessage(botToken, chatId, messageId, msg, getNamazlarimKeyboard(prayerLog, logDate, lang));
         return;
     }
     if (data === 'cmd_help') {
@@ -3046,22 +3266,80 @@ async function handleCallbackQuery(callbackQuery, env) {
         return;
     }
 
-    // ─── Şəhər seçimi ───
+    // ─── Şəhər seçimi (Ölkə → Şəhər) ───
     if (data === 'set_city_menu') {
         await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '📍');
+        const settings = await getSettings(chatId, env);
+        const lang = settings.language || 'az';
+        let msg = `${t('country_select_title', lang)}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += t('country_select_desc', lang);
+        const kb = {
+            inline_keyboard: [
+                [{ text: '🇦🇿 Azərbaycan', callback_data: 'set_country_az' }],
+                [{ text: '🇹🇷 Türkiye', callback_data: 'set_country_tr_1' }],
+                [{ text: t('btn_back', lang), callback_data: 'cmd_ayarlar' }],
+            ],
+        };
+        await telegramEditMessage(botToken, chatId, messageId, msg, kb);
+        return;
+    }
+    // ── Azərbaycan şəhərləri ──
+    if (data === 'set_country_az') {
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🇦🇿');
         const settings = await getSettings(chatId, env);
         const lang = settings.language || 'az';
         const currentCity = settings.city || 'baku';
         let msg = `${t('city_select_title', lang)}\n`;
         msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
-        msg += t('city_select_desc', lang);
+        msg += `🇦🇿 ${lang === 'tr' ? 'Azerbaycan şehirleri:' : 'Azərbaycan şəhərləri:'}`;
         const buttons = [];
-        for (const [id, city] of Object.entries(CITIES)) {
+        for (const id of AZERBAIJAN_CITIES) {
             const name = getCityName(id, lang);
             const check = (id === currentCity) ? ' ✅' : '';
-            buttons.push([{ text: `${city.emoji} ${name}${check}`, callback_data: `set_city_${id}` }]);
+            buttons.push([{ text: `🇦🇿 ${name}${check}`, callback_data: `set_city_${id}` }]);
         }
-        buttons.push([{ text: t('btn_back', lang), callback_data: 'cmd_ayarlar' }]);
+        buttons.push([{ text: t('btn_back', lang), callback_data: 'set_city_menu' }]);
+        await telegramEditMessage(botToken, chatId, messageId, msg, { inline_keyboard: buttons });
+        return;
+    }
+    // ── Türkiyə şəhərləri (səhifələmə ilə) ──
+    if (data.startsWith('set_country_tr_')) {
+        const page = parseInt(data.replace('set_country_tr_', ''), 10) || 1;
+        await telegramAnswerCallbackQuery(botToken, callbackQuery.id, '🇹🇷');
+        const settings = await getSettings(chatId, env);
+        const lang = settings.language || 'az';
+        const currentCity = settings.city || 'baku';
+        const totalPages = Math.ceil(TURKEY_CITIES.length / CITIES_PER_PAGE);
+        const start = (page - 1) * CITIES_PER_PAGE;
+        const end = Math.min(start + CITIES_PER_PAGE, TURKEY_CITIES.length);
+        const pageCities = TURKEY_CITIES.slice(start, end);
+        let msg = `${t('city_select_title', lang)}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += `🇹🇷 ${lang === 'tr' ? 'Türkiye şehirleri' : 'Türkiyə şəhərləri'}\n`;
+        msg += `📄 ${t('city_page_info', lang).replace('{page}', page).replace('{total}', totalPages)}`;
+        const buttons = [];
+        // Hər sətirdə 2 şəhər göstər
+        for (let i = 0; i < pageCities.length; i += 2) {
+            const row = [];
+            const id1 = pageCities[i];
+            const name1 = getCityName(id1, lang);
+            const check1 = (id1 === currentCity) ? ' ✅' : '';
+            row.push({ text: `${name1}${check1}`, callback_data: `set_city_${id1}` });
+            if (i + 1 < pageCities.length) {
+                const id2 = pageCities[i + 1];
+                const name2 = getCityName(id2, lang);
+                const check2 = (id2 === currentCity) ? ' ✅' : '';
+                row.push({ text: `${name2}${check2}`, callback_data: `set_city_${id2}` });
+            }
+            buttons.push(row);
+        }
+        // Naviqasiya düymələri
+        const navRow = [];
+        if (page > 1) navRow.push({ text: lang === 'tr' ? '◀️ Önceki' : '◀️ Əvvəlki', callback_data: `set_country_tr_${page - 1}` });
+        if (page < totalPages) navRow.push({ text: lang === 'tr' ? 'Sonraki ▶️' : 'Növbəti ▶️', callback_data: `set_country_tr_${page + 1}` });
+        if (navRow.length > 0) buttons.push(navRow);
+        buttons.push([{ text: t('btn_back', lang), callback_data: 'set_city_menu' }]);
         await telegramEditMessage(botToken, chatId, messageId, msg, { inline_keyboard: buttons });
         return;
     }
@@ -3351,8 +3629,14 @@ async function handleWebhook(request, env) {
         return new Response('OK', { status: 200 });
     }
 
+    // ── /namazlarim | /namazlarım ──
+    if (text.startsWith('/namazlarim') || text.startsWith('/namazlarım') || text.startsWith('/namaz') || text.startsWith('/todo')) {
+        await cmdNamazlarim(botToken, chatId, env);
+        return new Response('OK', { status: 200 });
+    }
+
     // ── /vaxtlar | /vakitler ──
-    if (text.startsWith('/vaxtlar') || text.startsWith('/bugün') || text.startsWith('/bugun') || text.startsWith('/today') || text.startsWith('/namaz') || text.startsWith('/vakitler') || text.startsWith('/ezan')) {
+    if (text.startsWith('/vaxtlar') || text.startsWith('/bugün') || text.startsWith('/bugun') || text.startsWith('/today') || text.startsWith('/vakitler') || text.startsWith('/ezan')) {
         await cmdVaxtlar(botToken, chatId, env);
         return new Response('OK', { status: 200 });
     }
@@ -3397,6 +3681,24 @@ async function handleWebhook(request, env) {
     // ── /ayarlar ──
     if (text.startsWith('/ayarlar') || text.startsWith('/settings')) {
         await cmdAyarlar(botToken, chatId, env);
+        return new Response('OK', { status: 200 });
+    }
+
+    // ── /dil ──
+    if (text.startsWith('/dil') || text.startsWith('/language')) {
+        const settings = await getSettings(chatId, env);
+        const lang = settings.language || 'az';
+        let msg = `${t('dil_cmd_title', lang)}\n`;
+        msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        msg += t('dil_cmd_desc', lang);
+        const kb = {
+            inline_keyboard: [
+                [{ text: `🇦🇿 Azərbaycan${lang === 'az' ? ' ✅' : ''}`, callback_data: 'set_lang_az' }],
+                [{ text: `🇹🇷 Türkçe${lang === 'tr' ? ' ✅' : ''}`, callback_data: 'set_lang_tr' }],
+                [{ text: t('btn_back', lang), callback_data: 'cmd_menu' }],
+            ],
+        };
+        await telegramSendMessage(botToken, chatId, msg, kb);
         return new Response('OK', { status: 200 });
     }
 
@@ -3504,222 +3806,402 @@ async function handleWebhook(request, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  PRE-SCHEDULED BİLDİRİŞ SİSTEMİ
+// ═══════════════════════════════════════════════════════════════
+
+async function buildDailySchedule(env) {
+    const baku = getBakuNow();
+    const isRam = isRamadan(baku.year, baku.month, baku.day);
+    const allUsers = await getAllUserIds(env);
+
+    // Şəhərə görə qrupla
+    const cityGroups = {};
+    const userSettingsMap = {};
+    for (const uid of allUsers) {
+        const settings = await getSettings(uid, env);
+        userSettingsMap[uid] = settings;
+        const cityId = settings.city || 'baku';
+        if (!cityGroups[cityId]) cityGroups[cityId] = [];
+        cityGroups[cityId].push(uid);
+    }
+
+    // Şəhər və Bakı arasındakı dəqiqə fərqini hesablayan köməkçi
+    function getCityOffsetToBakuMinutes(cId) {
+        if (cId === 'baku') return 0;
+        const cTZ = CITIES[cId] ? CITIES[cId].timezone : 'Asia/Baku';
+        const now = new Date();
+        const bNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Baku' }));
+        const cNow = new Date(now.toLocaleString('en-US', { timeZone: cTZ }));
+        return Math.round((bNow.getTime() - cNow.getTime()) / 60000);
+    }
+
+    // Timeslot-ları topla
+    const timeslots = {};
+
+    function addJob(hour, minute, job, dayShift = 0) {
+        let h = hour;
+        let m = minute;
+
+        while (m < 0) { h--; m += 60; }
+        while (m >= 60) { h++; m -= 60; }
+
+        while (h < 0) { dayShift--; h += 24; }
+        while (h >= 24) { dayShift++; h -= 24; }
+
+        let targetIsoDate = baku.isoDate;
+        if (dayShift !== 0) {
+            const targetDateInfo = getLocalDateOffset(dayShift, 'baku');
+            targetIsoDate = targetDateInfo.isoDate;
+        }
+
+        const key = `${targetIsoDate}:${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        if (!timeslots[key]) timeslots[key] = [];
+        timeslots[key].push(job);
+    }
+
+    // Hər şəhər üçün namaz vaxtlarını al və job-ları yarat
+    for (const [cityId, userIds] of Object.entries(cityGroups)) {
+        const dayData = await getDayDataForCity(baku.year, baku.month, baku.day, cityId, env);
+        if (!dayData) continue;
+        const cityOffset = getCityOffsetToBakuMinutes(cityId);
+
+        for (const uid of userIds) {
+            const settings = userSettingsMap[uid];
+            const lang = settings.language || 'az';
+
+            // Namaz bildirişləri
+            for (const prayer of NOTIFY_PRAYERS) {
+                if (!settings.prayers[prayer]) continue;
+                const prayerTimeStr = dayData[prayer];
+                if (!prayerTimeStr) continue;
+                const [pH, pM] = prayerTimeStr.split(':').map(Number);
+                const baseCronM = pM + cityOffset;
+
+                // Reminder-lər (15, 10, 5 dəq əvvəl)
+                for (const reminderMin of REMINDER_MINUTES) {
+                    const settingKey = `reminder${reminderMin}`;
+                    if (!settings[settingKey]) continue;
+                    addJob(pH, baseCronM - reminderMin, {
+                        userId: uid, type: `reminder${reminderMin}`,
+                        prayer, prayerTime: prayerTimeStr, cityId, lang,
+                    });
+                }
+
+                // Vaxt gəldi (on-time)
+                if (settings.reminderOnTime) {
+                    addJob(pH, baseCronM, {
+                        userId: uid, type: 'ontime',
+                        prayer, prayerTime: prayerTimeStr, cityId, lang,
+                    });
+                }
+
+                // Ramazan: iftara 30 dəq qalmış
+                if (isRam && prayer === 'meqrib') {
+                    addJob(pH, baseCronM - 30, {
+                        userId: uid, type: 'iftar_30',
+                        prayer: 'meqrib', prayerTime: prayerTimeStr, cityId, lang,
+                    });
+                }
+
+                // Ramazan: iftar + 30 dəq sonra oruc sualı
+                if (isRam && prayer === 'meqrib') {
+                    addJob(pH, baseCronM + 30, {
+                        userId: uid, type: 'fasting_prompt',
+                        prayer: 'meqrib', prayerTime: prayerTimeStr, cityId, lang,
+                    });
+                }
+            }
+
+            // Səhər cədvəli (05:00 yerli vaxt)
+            if (settings.morningSchedule) {
+                addJob(5, cityOffset, {
+                    userId: uid, type: 'morning',
+                    prayer: null, prayerTime: null, cityId, lang,
+                });
+            }
+        }
+    }
+
+    // Kanal bildirişləri (Bakı vaxtı ilə)
+    const chSettings = await getChannelSettings(env);
+    const activePrayers = Object.keys(chSettings).filter(k => chSettings[k]);
+    const bakuDayData = await getDayDataForCity(baku.year, baku.month, baku.day, 'baku', env);
+    if (bakuDayData) {
+        for (const prayer of activePrayers) {
+            const prayerTimeStr = bakuDayData[prayer];
+            if (!prayerTimeStr) continue;
+            const [pH, pM] = prayerTimeStr.split(':').map(Number);
+            addJob(pH, pM, {
+                userId: CHANNEL_ID, type: 'channel',
+                prayer, prayerTime: prayerTimeStr, cityId: 'baku', lang: 'az',
+            });
+        }
+    }
+
+    // KV-yə yaz (paralel)
+    const writePromises = [];
+    for (const [timeKey, jobs] of Object.entries(timeslots)) {
+        const [isoD, h, m] = timeKey.split(':');
+        const kvKey = `schedule:${isoD}:${h}:${m}`;
+        // TTL 48 saat edirik (şhiftlərə görə növbəti günün bildirişləri olanda silinməsin)
+        writePromises.push(
+            env.NOTIFICATIONS_KV.put(kvKey, JSON.stringify(jobs), { expirationTtl: 86400 * 2 })
+        );
+    }
+    await Promise.all(writePromises);
+
+    // İndex key
+    await env.NOTIFICATIONS_KV.put(`schedule_built:${isoDate}`, '1', { expirationTtl: 86400 });
+    console.log(`✅ Gündəlik cədvəl quruldu: ${isoDate}, ${Object.keys(timeslots).length} timeslot, ${Object.values(timeslots).reduce((s, j) => s + j.length, 0)} job`);
+}
+
+function formatNotificationMessage(job, dayData, baku, isRam) {
+    const lang = job.lang || 'az';
+    const cityId = job.cityId || 'baku';
+    const cityName = getCityName(cityId, lang);
+    const prayerNamesMap = getPrayerNames(lang);
+    const pName = job.prayer ? (prayerNamesMap[job.prayer] || PRAYER_NAMES[job.prayer] || job.prayer) : '';
+    const prayerTimeStr = job.prayerTime || '';
+
+    switch (job.type) {
+        case 'reminder15':
+        case 'reminder10':
+        case 'reminder5': {
+            const reminderMin = parseInt(job.type.replace('reminder', ''), 10);
+            const emoji = reminderMin === 5 ? '🔴' : reminderMin === 10 ? '🟡' : '🟢';
+            const minWord = lang === 'tr' ? 'dakika' : 'dəqiqə';
+
+            if (isRam && job.prayer === 'meqrib') {
+                return lang === 'tr'
+                    ? `${emoji} 🌙 <b>İftara ${reminderMin} ${minWord}</b> kaldı!\n\n🕐 İftar vakti: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Az kaldı, sabret!`
+                    : `${emoji} 🌙 <b>İftara ${reminderMin} ${minWord}</b> qalıb!\n\n🕐 İftar vaxtı: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Az qaldı, səbr et!`;
+            } else if (isRam && job.prayer === 'imsak') {
+                return lang === 'tr'
+                    ? `${emoji} 🌙 <b>Sahura (İmsak) ${reminderMin} ${minWord}</b> kaldı!\n\n🕐 İmsak vakti: ${prayerTimeStr}\n📍 ${cityName}\n\n🍽 Son yemek vakti yaklaşıyor!`
+                    : `${emoji} 🌙 <b>Səhərə (İmsak) ${reminderMin} ${minWord}</b> qalıb!\n\n🕐 İmsak vaxtı: ${prayerTimeStr}\n📍 ${cityName}\n\n🍽 Son yemək vaxtı yaxınlaşır!`;
+            } else {
+                return lang === 'tr'
+                    ? `${emoji} <b>${pName}</b> vaktine <b>${reminderMin} ${minWord}</b> kaldı!\n\n🕐 Vakit: ${prayerTimeStr}`
+                    : `${emoji} <b>${pName}</b> vaxtına <b>${reminderMin} ${minWord}</b> qalıb!\n\n🕐 Vaxt: ${prayerTimeStr}`;
+            }
+        }
+
+        case 'ontime': {
+            const acceptPray = t('accept_pray', lang);
+            if (isRam && job.prayer === 'meqrib') {
+                const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
+                const motIdx = ramDay > 0 && ramDay <= 30 ? ramDay - 1 : 0;
+                const motivArr = lang === 'tr' ? MOTIVASIYA_MESAJLARI_TR : MOTIVASIYA_MESAJLARI;
+                return lang === 'tr'
+                    ? `🌙🎉 <b>İFTAR VAKTİDİR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım orucumuzu, dualarımızı kabul et!\nBismillah, buyurun!\n\n💬 ${motivArr[motIdx]}`
+                    : `🌙🎉 <b>İFTAR VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım orucumuzu, dualarımızı qəbul et!\nBismillah, buyurun!\n\n💬 ${MOTIVASIYA_MESAJLARI[motIdx]}`;
+            } else if (isRam && job.prayer === 'imsak') {
+                return lang === 'tr'
+                    ? `🌙 <b>İMSAK VAKTİDİR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\nOruç başlıyor. Niyet etmeyi unutmayın!\n${acceptPray}`
+                    : `🌙 <b>İMSAK VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\nOruc başlayır. Niyyət etməyi unutmayın!\n${acceptPray}`;
+            } else {
+                return lang === 'tr'
+                    ? `🕌 <b>${pName} vaktidir!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n${acceptPray}`
+                    : `🕌 <b>${pName} vaxtıdır!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n${acceptPray}`;
+            }
+        }
+
+        case 'iftar_30': {
+            return lang === 'tr'
+                ? `🌙 <b>İftara 30 dakika kaldı!</b>\n\n🕐 İftar vakti: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım, orucumuzu kabul et!`
+                : `🌙 <b>İftara 30 dəqiqə qalıb!</b>\n\n🕐 İftar vaxtı: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım, orucumuzu qəbul et!`;
+        }
+
+        case 'morning': {
+            if (!dayData) return null;
+            const currentMinutes = baku.hours * 60 + baku.minutes;
+            let title = t('morning_title', lang);
+            if (isRam) {
+                const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
+                const isQadr = QADR_NIGHTS.includes(ramDay);
+                title = t('ramadan_greet', lang).replace('{day}', ramDay) + `\n` + t('morning_title', lang);
+                if (isQadr) {
+                    title += lang === 'tr' ? `\n⭐ Bu gece Kadir gecesi olabilir!` : `\n⭐ Bu gecə Qadr gecəsi ola bilər!`;
+                }
+            }
+            const ramadanInfo = isRam ? { dayNumber: getRamadanDayNumber(baku.year, baku.month, baku.day) } : null;
+            let msg = formatPrayerTimesMessage(dayData, baku.dateStr, currentMinutes, title, ramadanInfo, lang, cityId);
+            if (isRam) {
+                const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
+                const quoteIndex = ramDay > 0 && ramDay <= 30 ? ramDay - 1 : 0;
+                msg += `\n\n📿 ${getRamadanQuote(quoteIndex, lang)}`;
+                const motivArr = lang === 'tr' ? MOTIVASIYA_MESAJLARI_TR : MOTIVASIYA_MESAJLARI;
+                msg += `\n💬 ${motivArr[quoteIndex]}`;
+            }
+            return msg;
+        }
+
+        case 'fasting_prompt': {
+            const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
+            return lang === 'tr'
+                ? `🌙 <b>Ramazanın ${ramDay}. günü</b>\n\nBugün oruç tuttunuz mu?`
+                : `🌙 <b>Ramazanın ${ramDay}-ci günü</b>\n\nBugün oruc tutdunuzmu?`;
+        }
+
+        case 'channel': {
+            if (isRam && job.prayer === 'meqrib') {
+                return `🌙🎉 <b>İFTAR VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allah orucunuzu qəbul etsin!\nBismillah, buyurun!`;
+            } else if (isRam && job.prayer === 'imsak') {
+                return `🌙 <b>İMSAK VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\nOruc başlayır. Niyyət etməyi unutmayın!\n🤲 Allah qəbul etsin!`;
+            } else {
+                return `🕌 <b>${PRAYER_NAMES[job.prayer] || job.prayer} vaxtıdır!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allah qəbul etsin!`;
+            }
+        }
+
+        default:
+            return null;
+    }
+}
+
+async function processTimeslot(env, ctx, workerUrl = null) {
+    const botToken = env.BOT_TOKEN;
+    const baku = getBakuNow();
+    const isoDate = baku.isoDate;
+    const hh = String(baku.hours).padStart(2, '0');
+    const mm = String(baku.minutes).padStart(2, '0');
+    const kvKey = `schedule:${isoDate}:${hh}:${mm}`;
+
+    const jobs = await env.NOTIFICATIONS_KV.get(kvKey, 'json');
+    if (!jobs || jobs.length === 0) return;
+
+    // Batching logic: Max 40 requests per execution (CF Limit is 50)
+    const BATCH_SIZE = 40;
+    const jobsToProcess = jobs.slice(0, BATCH_SIZE);
+    const jobsRemaining = jobs.slice(BATCH_SIZE);
+
+    console.log(`🔄 Processing batch: ${jobsToProcess.length} jobs. Remaining: ${jobsRemaining.length}`);
+
+    const isRam = isRamadan(baku.year, baku.month, baku.day);
+    const dayDataCache = {};
+
+    for (const job of jobsToProcess) {
+        try {
+            const cityId = job.cityId || 'baku';
+            if (!dayDataCache[cityId]) {
+                dayDataCache[cityId] = await getDayDataForCity(baku.year, baku.month, baku.day, cityId, env);
+            }
+            const dayData = dayDataCache[cityId];
+
+            const msg = formatNotificationMessage(job, dayData, baku, isRam);
+            if (!msg) continue;
+
+            if (job.type === 'fasting_prompt') {
+                const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
+                const fastingStatus = await getFastingStatus(job.userId, baku.year, env);
+                if (fastingStatus[ramDay] !== undefined) continue;
+                const kb = {
+                    inline_keyboard: [
+                        [
+                            { text: job.lang === 'tr' ? '✅ Evet, tuttum' : '✅ Bəli, tutdum', callback_data: `fast_yes_${ramDay}` },
+                            { text: job.lang === 'tr' ? '❌ Hayır' : '❌ Xeyr', callback_data: `fast_no_${ramDay}` },
+                        ],
+                    ],
+                };
+                await telegramSendMessage(botToken, job.userId, msg, kb);
+            } else {
+                await telegramSendMessage(botToken, job.userId, msg);
+            }
+        } catch (e) {
+            console.error(`❌ Job xətası (${job.userId}/${job.type}): ${e}`);
+        }
+    }
+
+    // Handle remaining jobs (Self-Chaining)
+    if (jobsRemaining.length > 0) {
+        await env.NOTIFICATIONS_KV.put(kvKey, JSON.stringify(jobsRemaining), { expirationTtl: 86400 });
+
+        if (!workerUrl) {
+            workerUrl = await env.NOTIFICATIONS_KV.get('system:worker_url');
+        }
+
+        if (workerUrl && env.ADMIN_PASSWORD) {
+            console.log(`🔗 Chaining cron: Triggering next batch via ${workerUrl}/cron-continue`);
+            const nextBatch = fetch(`${workerUrl}/cron-continue`, {
+                method: 'POST',
+                headers: { 'X-Cron-Secret': env.ADMIN_PASSWORD }
+            });
+            ctx.waitUntil(nextBatch);
+        } else {
+            console.warn("⚠️ Cannot chain cron: WORKER_URL (system:worker_url) or ADMIN_PASSWORD missing. Remaining jobs delayed.");
+        }
+    } else {
+        // All done, delete the key
+        await env.NOTIFICATIONS_KV.delete(kvKey);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  SCHEDULED HANDLER (Cron — Hər Dəqiqə)
 // ═══════════════════════════════════════════════════════════════
 
-async function handleScheduled(env) {
+async function handleScheduled(env, ctx) {
     const botToken = env.BOT_TOKEN;
-    const chatId = env.ALLOWED_CHAT_ID;
-
     const baku = getBakuNow();
-    const currentMinutes = baku.hours * 60 + baku.minutes;
-    const isRam = isRamadan(baku.year, baku.month, baku.day);
 
-    // Chat ayarlarını oxu
-    const settings = await getSettings(chatId, env);
-    const lang = settings.language || 'az';
-    const cityId = settings.city || 'baku';
-    const cityName = getCityName(cityId, lang);
-    const prayerNames = getPrayerNames(lang);
-
-    // ── Hər gün 05:00 — bugünkü vaxtları avtomatik göndər ──
-    if (settings.morningSchedule && baku.hours === 5 && baku.minutes === 0) {
-        const morningKey = `sent:${baku.isoDate}:morning_schedule:0`;
-        const alreadySent = await env.NOTIFICATIONS_KV.get(morningKey);
-        if (!alreadySent) {
-            const dayData = await getDayData(baku.year, baku.month, baku.day, env);
-            if (dayData) {
-                let title = t('morning_title', lang);
-                if (isRam) {
-                    const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
-                    const isQadr = QADR_NIGHTS.includes(ramDay);
-                    title = t('ramadan_greet', lang).replace('{day}', ramDay) + `\n` + t('morning_title', lang);
-                    if (isQadr) {
-                        title += lang === 'tr' ? `\n⭐ Bu gece Kadir gecesi olabilir!` : `\n⭐ Bu gecə Qadr gecəsi ola bilər!`;
-                    }
-                }
-
-                const ramadanInfo = isRam ? { dayNumber: getRamadanDayNumber(baku.year, baku.month, baku.day) } : null;
-                let msg = formatPrayerTimesMessage(dayData, baku.dateStr, currentMinutes, title, ramadanInfo, lang, cityId);
-
-                if (isRam) {
-                    const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
-                    const quoteIndex = ramDay > 0 && ramDay <= 30 ? ramDay - 1 : 0;
-                    msg += `\n\n📿 ${getRamadanQuote(quoteIndex, lang)}`;
-                    const motivArr = lang === 'tr' ? MOTIVASIYA_MESAJLARI_TR : MOTIVASIYA_MESAJLARI;
-                    msg += `\n💬 ${motivArr[quoteIndex]}`;
-                }
-
-                await telegramSendMessage(botToken, chatId, msg);
-                await env.NOTIFICATIONS_KV.put(morningKey, '1', { expirationTtl: 86400 });
-            }
+    // Gündə 1 dəfə: cədvəl qur (00:01-dən 00:30-a qədər retry)
+    if (baku.hours === 0 && baku.minutes >= 1 && baku.minutes <= 30) {
+        const built = await env.NOTIFICATIONS_KV.get(`schedule_built:${baku.isoDate}`);
+        if (!built) {
+            await buildDailySchedule(env);
         }
     }
 
-    // ── Namaz vaxtı bildirişləri ──
-    const dayData = await getDayData(baku.year, baku.month, baku.day, env);
-    if (!dayData) {
-        return;
-    }
+    // ── Gecə yarısı 00:05 — dünənki işarələnməmiş namazları qəzaya yaz ──
+    if (baku.hours === 0 && baku.minutes === 5) {
+        const autoQazaKey = `sent:${baku.isoDate}:auto_qaza:0`;
+        const alreadyDone = await env.NOTIFICATIONS_KV.get(autoQazaKey);
+        if (!alreadyDone) {
+            // Dünənki tarixi hesabla
+            const yesterday = getLocalDateOffset(-1, 'baku');
+            const yesterdayStr = `${yesterday.year}-${String(yesterday.month).padStart(2, '0')}-${String(yesterday.day).padStart(2, '0')}`;
 
-    for (const prayer of NOTIFY_PRAYERS) {
-        if (!settings.prayers[prayer]) continue;
+            // Bütün istifadəçilər üçün yoxla
+            const allUsers = await getAllUserIds(env);
+            for (const uid of allUsers) {
+                try {
+                    const logKey = `prayer_log:${uid}:${yesterdayStr}`;
+                    const prayerLog = await env.NOTIFICATIONS_KV.get(logKey, 'json');
+                    if (!prayerLog) continue; // Bu istifadəçi heç istifadə etməyib, skip
 
-        const prayerTimeStr = dayData[prayer];
-        if (!prayerTimeStr) continue;
+                    let missedCount = 0;
+                    const missed = await getMissedPrayers(uid, env);
 
-        const prayerMinutes = timeToMinutes(prayerTimeStr, false);
-        const diff = prayerMinutes - currentMinutes;
-
-        // ── Ramazan: İftara 30 dəq qalmış xüsusi xəbərdarlıq ──
-        if (isRam && prayer === 'meqrib' && diff === 30) {
-            const kvKey = `sent:${baku.isoDate}:iftar_30:0`;
-            const alreadySent = await env.NOTIFICATIONS_KV.get(kvKey);
-            if (!alreadySent) {
-                const msg = lang === 'tr'
-                    ? `🌙 <b>İftara 30 dakika kaldı!</b>\n\n🕐 İftar vakti: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım, orucumuzu kabul et!`
-                    : `🌙 <b>İftara 30 dəqiqə qalıb!</b>\n\n🕐 İftar vaxtı: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım, orucumuzu qəbul et!`;
-                await telegramSendMessage(botToken, chatId, msg);
-                await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
-            }
-        }
-
-        // ── Xəbərdarlıq mesajları (15, 10, 5 dəqiqə qabaq) ──
-        for (const reminderMin of REMINDER_MINUTES) {
-            const settingKey = `reminder${reminderMin}`;
-            if (!settings[settingKey]) continue;
-
-            if (diff === reminderMin) {
-                const kvKey = `sent:${baku.isoDate}:${prayer}:${reminderMin}`;
-                const alreadySent = await env.NOTIFICATIONS_KV.get(kvKey);
-                if (!alreadySent) {
-                    const emoji = reminderMin === 5 ? '🔴' : reminderMin === 10 ? '🟡' : '🟢';
-                    let msg;
-                    const minWord = lang === 'tr' ? 'dakika' : 'dəqiqə';
-                    const pName = prayerNames[prayer] || PRAYER_NAMES[prayer];
-
-                    if (isRam && prayer === 'meqrib') {
-                        msg = lang === 'tr'
-                            ? `${emoji} 🌙 <b>İftara ${reminderMin} ${minWord}</b> kaldı!\n\n🕐 İftar vakti: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Az kaldı, sabret!`
-                            : `${emoji} 🌙 <b>İftara ${reminderMin} ${minWord}</b> qalıb!\n\n🕐 İftar vaxtı: ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Az qaldı, səbr et!`;
-                    } else if (isRam && prayer === 'imsak') {
-                        msg = lang === 'tr'
-                            ? `${emoji} 🌙 <b>Sahura (İmsak) ${reminderMin} ${minWord}</b> kaldı!\n\n🕐 İmsak vakti: ${prayerTimeStr}\n📍 ${cityName}\n\n🍽 Son yemek vakti yaklaşıyor!`
-                            : `${emoji} 🌙 <b>Səhərə (İmsak) ${reminderMin} ${minWord}</b> qalıb!\n\n🕐 İmsak vaxtı: ${prayerTimeStr}\n📍 ${cityName}\n\n🍽 Son yemək vaxtı yaxınlaşır!`;
-                    } else {
-                        msg = lang === 'tr'
-                            ? `${emoji} <b>${pName}</b> vaktine <b>${reminderMin} ${minWord}</b> kaldı!\n\n🕐 Vakit: ${prayerTimeStr}`
-                            : `${emoji} <b>${pName}</b> vaxtına <b>${reminderMin} ${minWord}</b> qalıb!\n\n🕐 Vaxt: ${prayerTimeStr}`;
+                    for (const p of TRACKED_PRAYERS) {
+                        if (prayerLog[p] === null || prayerLog[p] === undefined) {
+                            // İşarələnməyib → qəzaya yaz
+                            prayerLog[p] = false;
+                            missed[p] = (missed[p] || 0) + 1;
+                            missedCount++;
+                        }
                     }
 
-                    await telegramSendMessage(botToken, chatId, msg);
-                    await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
-                }
-            }
-        }
+                    if (missedCount > 0) {
+                        await saveMissedPrayers(uid, missed, env);
+                        // Dünənki logu yenilə (false ilə)
+                        await env.NOTIFICATIONS_KV.put(logKey, JSON.stringify(prayerLog), { expirationTtl: 604800 });
 
-        // ── Vaxt gəldi mesajı (fərq 0) ──
-        if (diff === 0 && settings.reminderOnTime) {
-            const kvKey = `sent:${baku.isoDate}:${prayer}:0`;
-            const alreadySent = await env.NOTIFICATIONS_KV.get(kvKey);
-            if (!alreadySent) {
-                let msg;
-                const pName = prayerNames[prayer] || PRAYER_NAMES[prayer];
-                const acceptPray = t('accept_pray', lang);
-
-                if (isRam && prayer === 'meqrib') {
-                    const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
-                    const motIdx = ramDay > 0 && ramDay <= 30 ? ramDay - 1 : 0;
-                    const motivArr = lang === 'tr' ? MOTIVASIYA_MESAJLARI_TR : MOTIVASIYA_MESAJLARI;
-                    msg = lang === 'tr'
-                        ? `🌙🎉 <b>İFTAR VAKTİDİR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım orucumuzu, dualarımızı kabul et!\nBismillah, buyurun!\n\n💬 ${motivArr[motIdx]}`
-                        : `🌙🎉 <b>İFTAR VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allahım orucumuzu, dualarımızı qəbul et!\nBismillah, buyurun!\n\n💬 ${MOTIVASIYA_MESAJLARI[motIdx]}`;
-                } else if (isRam && prayer === 'imsak') {
-                    msg = lang === 'tr'
-                        ? `🌙 <b>İMSAK VAKTİDİR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\nOruç başlıyor. Niyet etmeyi unutmayın!\n${acceptPray}`
-                        : `🌙 <b>İMSAK VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\nOruc başlayır. Niyyət etməyi unutmayın!\n${acceptPray}`;
-                } else {
-                    msg = lang === 'tr'
-                        ? `🕌 <b>${pName} vaktidir!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n${acceptPray}`
-                        : `🕌 <b>${pName} vaxtıdır!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n${acceptPray}`;
-                }
-
-                await telegramSendMessage(botToken, chatId, msg);
-                await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
-            }
-        }
-    }
-
-    // ── Ramazan: İftar + 30 dəq sonra oruc sualı ──
-    if (isRam && dayData) {
-        const iftarTimeStr = dayData.meqrib;
-        const iftarMinutes = timeToMinutes(iftarTimeStr, false);
-        const diff = currentMinutes - iftarMinutes;
-
-        if (diff === 30) {
-            const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
-            const kvKey = `sent:${baku.isoDate}:fasting_prompt:0`;
-            const alreadySent = await env.NOTIFICATIONS_KV.get(kvKey);
-            if (!alreadySent) {
-                const fastingStatus = await getFastingStatus(chatId, baku.year, env);
-                if (fastingStatus[ramDay] === undefined) {
-                    const msg = lang === 'tr'
-                        ? `🌙 <b>Ramazanın ${ramDay}. günü</b>\n\nBugün oruç tuttunuz mu?`
-                        : `🌙 <b>Ramazanın ${ramDay}-ci günü</b>\n\nBugün oruc tutdunuzmu?`;
-                    const kb = {
-                        inline_keyboard: [
-                            [
-                                { text: lang === 'tr' ? '✅ Evet, tuttum' : '✅ Bəli, tutdum', callback_data: `fast_yes_${ramDay}` },
-                                { text: lang === 'tr' ? '❌ Hayır' : '❌ Xeyr', callback_data: `fast_no_${ramDay}` },
-                            ],
-                        ],
-                    };
-                    await telegramSendMessage(botToken, chatId, msg, kb);
-                }
-                await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
-            }
-        }
-    }
-
-    // ── Kanal Bildirişləri (dinamik, admin idarəli) ──────────────
-    if (dayData) {
-        const chSettings = await getChannelSettings(env);
-        const activePrayers = Object.keys(chSettings).filter(k => chSettings[k]);
-
-        for (const prayer of activePrayers) {
-            const prayerTimeStr = dayData[prayer];
-            if (!prayerTimeStr) continue;
-
-            const prayerMinutes = timeToMinutes(prayerTimeStr, false);
-            const diff = prayerMinutes - currentMinutes;
-
-            if (diff === 0) {
-                const kvKey = `sent:${baku.isoDate}:channel:${prayer}`;
-                const alreadySent = await env.NOTIFICATIONS_KV.get(kvKey);
-
-                if (!alreadySent) {
-                    let msg;
-                    const cityName = getCityName('baku', 'az');
-
-                    if (isRam && prayer === 'meqrib') {
-                        msg = `🌙🎉 <b>İFTAR VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allah orucunuzu qəbul etsin!\nBismillah, buyurun!`;
-                    } else if (isRam && prayer === 'imsak') {
-                        msg = `🌙 <b>İMSAK VAXTIDIR!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\nOruc başlayır. Niyyət etməyi unutmayın!\n🤲 Allah qəbul etsin!`;
-                    } else {
-                        msg = `🕌 <b>${PRAYER_NAMES[prayer] || prayer} vaxtıdır!</b>\n\n🕐 ${prayerTimeStr}\n📍 ${cityName}\n\n🤲 Allah qəbul etsin!`;
+                        // İstifadəçiyə xəbər ver
+                        const userSettings = await getSettings(uid, env);
+                        const uLang = userSettings.language || 'az';
+                        const autoMsg = t('namazlarim_auto_qaza', uLang).replace('{count}', missedCount);
+                        try {
+                            await telegramSendMessage(botToken, uid, autoMsg);
+                        } catch { /* istifadəçi botu bloklamış ola bilər */ }
                     }
-
-                    try {
-                        await telegramSendMessage(botToken, CHANNEL_ID, msg);
-                        await env.NOTIFICATIONS_KV.put(kvKey, '1', { expirationTtl: 86400 });
-                        console.log(`✅ Kanala göndərildi: ${prayer} (${baku.isoDate})`);
-                    } catch (e) {
-                        console.error(`❌ Kanala göndərilmədi: ${prayer} — ${e}`);
-                    }
-                }
+                } catch { /* istifadəçi emalı xətası */ }
             }
+
+            await env.NOTIFICATIONS_KV.put(autoQazaKey, '1', { expirationTtl: 86400 });
         }
     }
+
+    // ── Hər dəqiqə: timeslot-u oxu və icra et ──
+    await processTimeslot(env, ctx);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3992,6 +4474,18 @@ export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
 
+        // Auto-discover Worker URL for cron chaining
+        ctx.waitUntil(env.NOTIFICATIONS_KV.put('system:worker_url', url.origin));
+
+        // ── Cron Chaining Endpoint ──
+        if (url.pathname === '/cron-continue' && request.method === 'POST') {
+            if (request.headers.get('X-Cron-Secret') !== env.ADMIN_PASSWORD) {
+                return new Response('Unauthorized', { status: 401 });
+            }
+            await processTimeslot(env, ctx, url.origin);
+            return new Response('OK');
+        }
+
         // POST /webhook → Telegram update
         if (request.method === 'POST' && url.pathname === '/webhook') {
             return handleWebhook(request, env);
@@ -4066,7 +4560,7 @@ export default {
     },
 
     async scheduled(event, env, ctx) {
-        ctx.waitUntil(handleScheduled(env));
+        ctx.waitUntil(handleScheduled(env, ctx));
     },
 };
 
