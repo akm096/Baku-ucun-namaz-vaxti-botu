@@ -23,6 +23,7 @@ Bakı şəhəri üçün namaz vaxtlarını bildirən, Hicri təqvim, Ramazan rej
 - Hər gün səhər **05:00**-da avtomatik gündəlik cədvəl
 - Cloudflare KV ilə təkrar bildirişlərin qarşısının alınması (dedup)
 - 🌍 **Ağıllı Saat Qurşağı İdarəetməsi:** İstifadəçinin şəhərinə görə (məs. Türkiyə UTC+3, Bakı UTC+4) bildirişlərin gecikmə və ya tez getməsinin qarşısını alan avtomatik offset sistemi
+- 🚀 **Limitsiz Bildiriş Yayımı:** Cloudflare Workers-in 50 *subrequest* limitini aşmaq üçün **Batching & Self-Chaining** arxitekturası (Minlərlə istifadəçiyə kəsintisiz bildiriş)
 
 ### 🌙 Ramazan Rejimi
 - Ramazan ayında avtomatik aktivləşir
@@ -277,9 +278,9 @@ Bu bot tamamilə **Cloudflare-in pulsuz tier-ində** işləyir:
 
 | Resurs | Pulsuz limit | Botun istifadəsi |
 |--------|-------------|------------------|
-| Worker sorğuları | 100K/gün | ~1440/gün (cron) + əmrlər |
-| KV oxuma | 100K/gün | ~100/gün max |
-| KV yazma | 1K/gün | ~30/gün max |
+| Worker sorğuları | 100K/gün | ~1440/gün (cron) + mesaj sayı qədər (batching) + əmrlər |
+| KV oxuma | 100K/gün | İstifadədən asılı olaraq dəyişir (minimum) |
+| KV yazma | 1K/gün | ~30/gün (cədvəl qurulması) + batching yazıları |
 | Cron triggers | 5 ədəd | 1 ədəd |
 
 ---
