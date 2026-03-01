@@ -1145,6 +1145,7 @@ function getLocalDateOffset(offsetDays, cityId = 'baku') {
         month: parseInt(parts.month, 10),
         day: parseInt(parts.day, 10),
         dateStr: `${parts.day}.${parts.month}.${parts.year}`,
+        isoDate: `${parts.year}-${parts.month}-${parts.day}`,
         monthKey: `${parts.year}-${parts.month}`,
     };
 }
@@ -1275,7 +1276,7 @@ async function getMonthDataForCity(year, month, cityId, env) {
 
     if (city.source === 'bundled' || cityId === 'baku') {
         const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-        return await getPrayerData(monthKey, env);
+        return await getPrayerData(monthKey, cityId, env);
     }
 
     if (city.source === 'api') {
@@ -1344,7 +1345,7 @@ function getRamadanDayNumber(year, month, day) {
 /**
  * Ramazan ayının bütün günlərini qaytarır (data + prayer times).
  */
-async function getRamadanDays(year, env, lang = 'az') {
+async function getRamadanDays(year, cityId = 'baku', env, lang = 'az') {
     const ramadan = RAMADAN_DATES[year];
     if (!ramadan) return [];
 
@@ -1362,7 +1363,7 @@ async function getRamadanDays(year, env, lang = 'az') {
         const cMonth = currentDate.getMonth() + 1;
         const cDay = currentDate.getDate();
 
-        const dayData = await getDayData(cYear, cMonth, cDay, env);
+        const dayData = await getDayDataForCity(cYear, cMonth, cDay, cityId, env);
         const locale = LOCALES[lang] || LOCALES.az;
         const wdShort = locale.weekdays_short[currentDate.getDay()];
 
@@ -2315,6 +2316,7 @@ function getRamadanKeyboard(days, fastingStatus, pageNum, totalPages, lang = 'az
 async function cmdRamazan(botToken, chatId, env, page = 1) {
     const settings = env ? await getSettings(chatId, env) : {};
     const lang = settings.language || 'az';
+    const cityId = settings.city || 'baku';
     const baku = getBakuNow();
     const year = baku.year;
     const ramadan = RAMADAN_DATES[year];
@@ -2329,7 +2331,7 @@ async function cmdRamazan(botToken, chatId, env, page = 1) {
         return;
     }
 
-    const ramadanDays = await getRamadanDays(year, env, lang);
+    const ramadanDays = await getRamadanDays(year, cityId, env, lang);
     const fastingStatus = await getFastingStatus(chatId, year, env);
 
     // 3 səhifəyə böl (hər biri 10 gün)
@@ -2361,6 +2363,7 @@ async function cmdRamazan(botToken, chatId, env, page = 1) {
 async function cmdRamazanStats(botToken, chatId, env) {
     const settings = env ? await getSettings(chatId, env) : {};
     const lang = settings.language || 'az';
+    const cityId = settings.city || 'baku';
     const baku = getBakuNow();
     const year = baku.year;
     const ramadan = RAMADAN_DATES[year];
@@ -2375,7 +2378,7 @@ async function cmdRamazanStats(botToken, chatId, env) {
         return;
     }
 
-    const ramadanDays = await getRamadanDays(year, env, lang);
+    const ramadanDays = await getRamadanDays(year, cityId, env, lang);
     const fastingStatus = await getFastingStatus(chatId, year, env);
     const stats = calculateRamadanStats(fastingStatus, ramadanDays.length, year);
     const pct = stats.total > 0 ? Math.round((stats.fasted / stats.total) * 100) : 0;
@@ -2579,8 +2582,7 @@ function getZikrKeyboard(counts, lang = 'az') {
 async function cmdZikr(botToken, chatId, env) {
     const settings = await getSettings(chatId, env);
     const lang = settings.language || 'az';
-    const key = `zikr:${chatId}`;
-    const counts = await env.NOTIFICATIONS_KV.get(key, 'json') || {};
+    const counts = {};
 
     let msg = `📿 <b>${lang === 'tr' ? 'Dijital Tesbih' : 'Rəqəmsal Təsbeh'}</b>\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
@@ -2920,12 +2922,32 @@ async function trackUser(chatId, env, userObj = null) {
         const count = countStr ? parseInt(countStr, 10) : 0;
         await env.NOTIFICATIONS_KV.put('users:count', String(count + 1));
     } else {
-        // Mövcud istifadəçi — lastActive-i yenilə
-        existing.lastActive = now;
-        if (userObj?.first_name) existing.firstName = userObj.first_name;
-        if (userObj?.last_name) existing.lastName = userObj.last_name;
-        if (userObj?.username) existing.username = userObj.username;
-        await env.NOTIFICATIONS_KV.put(userKey, JSON.stringify(existing));
+        // Mövcud istifadəçi — lastActive-i gündə 1 dəfə yenilə
+        const todayStr = new Date(now).toISOString().split('T')[0];
+        const lastActiveStr = existing.lastActive ? new Date(existing.lastActive).toISOString().split('T')[0] : '';
+        let needsUpdate = false;
+
+        if (todayStr !== lastActiveStr) {
+            existing.lastActive = now;
+            needsUpdate = true;
+        }
+
+        if (userObj?.first_name && existing.firstName !== userObj.first_name) {
+            existing.firstName = userObj.first_name;
+            needsUpdate = true;
+        }
+        if (userObj?.last_name && existing.lastName !== userObj.last_name) {
+            existing.lastName = userObj.last_name;
+            needsUpdate = true;
+        }
+        if (userObj?.username && existing.username !== userObj.username) {
+            existing.username = userObj.username;
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            await env.NOTIFICATIONS_KV.put(userKey, JSON.stringify(existing));
+        }
     }
 }
 
@@ -3410,10 +3432,23 @@ async function handleCallbackQuery(callbackQuery, env) {
         const zikrId = data.replace('zikr_plus_', '');
         const settings = await getSettings(chatId, env);
         const lang = settings.language || 'az';
-        const key = `zikr:${chatId}`;
-        const counts = await env.NOTIFICATIONS_KV.get(key, 'json') || {};
+
+        const counts = {};
+        if (callbackQuery.message && callbackQuery.message.reply_markup && callbackQuery.message.reply_markup.inline_keyboard) {
+            const kb = callbackQuery.message.reply_markup.inline_keyboard;
+            for (const row of kb) {
+                if (row.length > 0 && row[0].callback_data && row[0].callback_data.startsWith('zikr_info_')) {
+                    const id = row[0].callback_data.replace('zikr_info_', '');
+                    const txt = row[0].text;
+                    const match = txt.match(/: (\d+)\/\d+/);
+                    if (match) {
+                        counts[id] = parseInt(match[1], 10);
+                    }
+                }
+            }
+        }
+
         counts[zikrId] = (counts[zikrId] || 0) + 1;
-        await env.NOTIFICATIONS_KV.put(key, JSON.stringify(counts));
         const item = ZIKR_ITEMS.find(z => z.id === zikrId);
         const label = item ? (lang === 'tr' ? (item.name_tr || item.name) : item.name) : zikrId;
         await telegramAnswerCallbackQuery(botToken, callbackQuery.id, `${label}: ${counts[zikrId]}`);
@@ -3448,8 +3483,6 @@ async function handleCallbackQuery(callbackQuery, env) {
     if (data === 'zikr_reset') {
         const settings = await getSettings(chatId, env);
         const lang = settings.language || 'az';
-        const key = `zikr:${chatId}`;
-        await env.NOTIFICATIONS_KV.put(key, JSON.stringify({}));
         await telegramAnswerCallbackQuery(botToken, callbackQuery.id, lang === 'tr' ? '🔄 Sıfırlandı!' : '🔄 Sıfırlandı!');
         let msg = `📿 <b>${lang === 'tr' ? 'Dijital Tesbih' : 'Rəqəmsal Təsbeh'}</b>\n`;
         msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
@@ -3947,7 +3980,10 @@ async function buildDailySchedule(env) {
 
                 // Ramazan: iftar + 30 dəq sonra oruc sualı
                 if (isRam && prayer === 'meqrib') {
-                    addJob(pH, baseCronM + 30, {
+                    const fpH = pH;
+                    const fpM = baseCronM + 30;
+                    console.log(`📝 fasting_prompt yaradıldı: user=${uid}, meqrib=${prayerTimeStr}, prompt_time=${fpH}:${fpM}, cityOffset=${cityOffset}`);
+                    addJob(fpH, fpM, {
                         userId: uid, type: 'fasting_prompt',
                         prayer: 'meqrib', prayerTime: prayerTimeStr, cityId, lang,
                     });
@@ -3980,21 +4016,24 @@ async function buildDailySchedule(env) {
         }
     }
 
-    // KV-yə yaz (paralel)
-    const writePromises = [];
-    for (const [timeKey, jobs] of Object.entries(timeslots)) {
-        const [isoD, h, m] = timeKey.split(':');
-        const kvKey = `schedule:${isoD}:${h}:${m}`;
-        // TTL 48 saat edirik (şhiftlərə görə növbəti günün bildirişləri olanda silinməsin)
-        writePromises.push(
-            env.NOTIFICATIONS_KV.put(kvKey, JSON.stringify(jobs), { expirationTtl: 86400 * 2 })
-        );
-    }
-    await Promise.all(writePromises);
+    // KV-yə yaz — bütün günün schedule-unu BİR key-ə (KV put optimallaşdırması)
+    const totalTimeslots = Object.keys(timeslots).length;
+    const totalJobs = Object.values(timeslots).reduce((s, j) => s + j.length, 0);
+    const timeslotKeys = Object.keys(timeslots).slice(0, 5); // İlk 5 key-i göstər
 
-    // İndex key
-    await env.NOTIFICATIONS_KV.put(`schedule_built:${isoDate}`, '1', { expirationTtl: 86400 });
-    console.log(`✅ Gündəlik cədvəl quruldu: ${isoDate}, ${Object.keys(timeslots).length} timeslot, ${Object.values(timeslots).reduce((s, j) => s + j.length, 0)} job`);
+    if (totalJobs === 0) {
+        console.warn(`⚠️ Schedule boşdur! User sayı: ${allUsers.length}, city groups: ${JSON.stringify(Object.keys(cityGroups))}`);
+    }
+
+    console.log(`📝 Schedule yazılır: schedule_full:${isoDate}, ${totalTimeslots} timeslot, ${totalJobs} job, users: ${allUsers.length}, ilk key-lər: [${timeslotKeys.join(', ')}]`);
+
+    await env.NOTIFICATIONS_KV.put(
+        `schedule_full:${isoDate}`,
+        JSON.stringify(timeslots),
+        { expirationTtl: 86400 * 2 }
+    );
+
+    console.log(`✅ Gündəlik cədvəl quruldu: ${isoDate}, ${totalTimeslots} timeslot, ${totalJobs} job (1 KV put)`);
 }
 
 function formatNotificationMessage(job, dayData, baku, isRam) {
@@ -4106,9 +4145,16 @@ async function processTimeslot(env, ctx, workerUrl = null) {
     const isoDate = baku.isoDate;
     const hh = String(baku.hours).padStart(2, '0');
     const mm = String(baku.minutes).padStart(2, '0');
-    const kvKey = `schedule:${isoDate}:${hh}:${mm}`;
+    const timeKey = `${isoDate}:${hh}:${mm}`;
 
-    const jobs = await env.NOTIFICATIONS_KV.get(kvKey, 'json');
+    // Konsolidasiya edilmiş schedule-dan oxu (1 key bütün gün üçün)
+    const fullSchedule = await env.NOTIFICATIONS_KV.get(`schedule_full:${isoDate}`, 'json');
+    if (!fullSchedule) {
+        console.log(`⏭ schedule_full:${isoDate} tapılmadı (${hh}:${mm})`);
+        return null; // null = schedule mövcud deyil, build lazımdır
+    }
+
+    const jobs = fullSchedule[timeKey];
     if (!jobs || jobs.length === 0) return;
 
     // Batching logic: Max 40 requests per execution (CF Limit is 50)
@@ -4116,7 +4162,7 @@ async function processTimeslot(env, ctx, workerUrl = null) {
     const jobsToProcess = jobs.slice(0, BATCH_SIZE);
     const jobsRemaining = jobs.slice(BATCH_SIZE);
 
-    console.log(`🔄 Processing batch: ${jobsToProcess.length} jobs. Remaining: ${jobsRemaining.length}`);
+    console.log(`🔄 Processing ${timeKey}: ${jobsToProcess.length} jobs [${jobsToProcess.map(j => j.type).join(', ')}]. Remaining: ${jobsRemaining.length}`);
 
     const isRam = isRamadan(baku.year, baku.month, baku.day);
     const dayDataCache = {};
@@ -4135,6 +4181,7 @@ async function processTimeslot(env, ctx, workerUrl = null) {
             if (job.type === 'fasting_prompt') {
                 const ramDay = getRamadanDayNumber(baku.year, baku.month, baku.day);
                 const fastingStatus = await getFastingStatus(job.userId, baku.year, env);
+                console.log(`🌙 fasting_prompt: user=${job.userId}, ramDay=${ramDay}, status=${JSON.stringify(fastingStatus[ramDay])}, skip=${fastingStatus[ramDay] !== undefined}`);
                 if (fastingStatus[ramDay] !== undefined) continue;
                 const kb = {
                     inline_keyboard: [
@@ -4155,7 +4202,9 @@ async function processTimeslot(env, ctx, workerUrl = null) {
 
     // Handle remaining jobs (Self-Chaining)
     if (jobsRemaining.length > 0) {
-        await env.NOTIFICATIONS_KV.put(kvKey, JSON.stringify(jobsRemaining), { expirationTtl: 86400 });
+        // Overflow: qalan job-ları schedule-a geri yaz
+        fullSchedule[timeKey] = jobsRemaining;
+        await env.NOTIFICATIONS_KV.put(`schedule_full:${isoDate}`, JSON.stringify(fullSchedule), { expirationTtl: 86400 * 2 });
 
         if (!workerUrl) {
             workerUrl = await env.NOTIFICATIONS_KV.get('system:worker_url');
@@ -4172,9 +4221,14 @@ async function processTimeslot(env, ctx, workerUrl = null) {
             console.warn("⚠️ Cannot chain cron: WORKER_URL (system:worker_url) or ADMIN_PASSWORD missing. Remaining jobs delayed.");
         }
     } else {
-        // All done, delete the key
-        await env.NOTIFICATIONS_KV.delete(kvKey);
+        // Bu timeslot bitdi — KV-ya yazmağa ehtiyac yoxdur!
+        // Schedule TTL=48saat ilə avtomatik silinəcək.
+        // Növbəti dəqiqə oxuduqda bu timeslot artıq boş olacaq (jobs yoxdur).
+        // Bu şəkildə gündəlik ~80 put əməliyyatına qənaət edirik.
+        console.log(`✅ Timeslot ${timeKey}: ${jobsToProcess.length} job icra edildi.`);
     }
+
+    return true; // true = schedule mövcud idi
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4185,65 +4239,82 @@ async function handleScheduled(env, ctx) {
     const botToken = env.BOT_TOKEN;
     const baku = getBakuNow();
 
-    // Gündə 1 dəfə: cədvəl qur (00:01-dən 00:30-a qədər retry)
-    if (baku.hours === 0 && baku.minutes >= 1 && baku.minutes <= 30) {
-        const built = await env.NOTIFICATIONS_KV.get(`schedule_built:${baku.isoDate}`);
-        if (!built) {
-            await buildDailySchedule(env);
-        }
-    }
+
 
     // ── Gecə yarısı 00:05 — dünənki işarələnməmiş namazları qəzaya yaz ──
     if (baku.hours === 0 && baku.minutes === 5) {
-        const autoQazaKey = `sent:${baku.isoDate}:auto_qaza:0`;
-        const alreadyDone = await env.NOTIFICATIONS_KV.get(autoQazaKey);
-        if (!alreadyDone) {
-            // Dünənki tarixi hesabla
-            const yesterday = getLocalDateOffset(-1, 'baku');
-            const yesterdayStr = `${yesterday.year}-${String(yesterday.month).padStart(2, '0')}-${String(yesterday.day).padStart(2, '0')}`;
+        try {
+            const autoQazaKey = `sent:${baku.isoDate}:auto_qaza:0`;
+            const alreadyDone = await env.NOTIFICATIONS_KV.get(autoQazaKey);
+            if (!alreadyDone) {
+                // Dünənki tarixi hesabla
+                const yesterday = getLocalDateOffset(-1, 'baku');
+                const yesterdayStr = `${yesterday.year}-${String(yesterday.month).padStart(2, '0')}-${String(yesterday.day).padStart(2, '0')}`;
 
-            // Bütün istifadəçilər üçün yoxla
-            const allUsers = await getAllUserIds(env);
-            for (const uid of allUsers) {
-                try {
-                    const logKey = `prayer_log:${uid}:${yesterdayStr}`;
-                    const prayerLog = await env.NOTIFICATIONS_KV.get(logKey, 'json');
-                    if (!prayerLog) continue; // Bu istifadəçi heç istifadə etməyib, skip
+                // Bütün istifadəçilər üçün yoxla
+                const allUsers = await getAllUserIds(env);
+                for (const uid of allUsers) {
+                    try {
+                        const logKey = `prayer_log:${uid}:${yesterdayStr}`;
+                        const prayerLog = await env.NOTIFICATIONS_KV.get(logKey, 'json');
+                        if (!prayerLog) continue; // Bu istifadəçi heç istifadə etməyib, skip
 
-                    let missedCount = 0;
-                    const missed = await getMissedPrayers(uid, env);
+                        let missedCount = 0;
+                        const missed = await getMissedPrayers(uid, env);
 
-                    for (const p of TRACKED_PRAYERS) {
-                        if (prayerLog[p] === null || prayerLog[p] === undefined) {
-                            // İşarələnməyib → qəzaya yaz
-                            prayerLog[p] = false;
-                            missed[p] = (missed[p] || 0) + 1;
-                            missedCount++;
+                        for (const p of TRACKED_PRAYERS) {
+                            if (prayerLog[p] === null || prayerLog[p] === undefined) {
+                                // İşarələnməyib → qəzaya yaz
+                                prayerLog[p] = false;
+                                missed[p] = (missed[p] || 0) + 1;
+                                missedCount++;
+                            }
                         }
-                    }
 
-                    if (missedCount > 0) {
-                        await saveMissedPrayers(uid, missed, env);
-                        // Dünənki logu yenilə (false ilə)
-                        await env.NOTIFICATIONS_KV.put(logKey, JSON.stringify(prayerLog), { expirationTtl: 604800 });
+                        if (missedCount > 0) {
+                            await saveMissedPrayers(uid, missed, env);
+                            // Dünənki logu yenilə (false ilə)
+                            await env.NOTIFICATIONS_KV.put(logKey, JSON.stringify(prayerLog), { expirationTtl: 604800 });
 
-                        // İstifadəçiyə xəbər ver
-                        const userSettings = await getSettings(uid, env);
-                        const uLang = userSettings.language || 'az';
-                        const autoMsg = t('namazlarim_auto_qaza', uLang).replace('{count}', missedCount);
-                        try {
-                            await telegramSendMessage(botToken, uid, autoMsg);
-                        } catch { /* istifadəçi botu bloklamış ola bilər */ }
-                    }
-                } catch { /* istifadəçi emalı xətası */ }
+                            // İstifadəçiyə xəbər ver
+                            const userSettings = await getSettings(uid, env);
+                            const uLang = userSettings.language || 'az';
+                            const autoMsg = t('namazlarim_auto_qaza', uLang).replace('{count}', missedCount);
+                            try {
+                                await telegramSendMessage(botToken, uid, autoMsg);
+                            } catch { /* istifadəçi botu bloklamış ola bilər */ }
+                        }
+                    } catch { /* istifadəçi emalı xətası */ }
+                }
+
+                await env.NOTIFICATIONS_KV.put(autoQazaKey, '1', { expirationTtl: 86400 });
             }
-
-            await env.NOTIFICATIONS_KV.put(autoQazaKey, '1', { expirationTtl: 86400 });
+        } catch (e) {
+            console.error(`❌ Auto-qaza xətası: ${e}`);
         }
     }
 
     // ── Hər dəqiqə: timeslot-u oxu və icra et ──
-    await processTimeslot(env, ctx);
+    // processTimeslot null qaytarırsa — schedule yoxdur, build lazımdır
+    let scheduleExists = true;
+    try {
+        const result = await processTimeslot(env, ctx);
+        if (result === null) scheduleExists = false;
+    } catch (e) {
+        console.error(`❌ processTimeslot xətası: ${e}`);
+        scheduleExists = false; // xəta olubsa, schedule olmaya bilər
+    }
+
+    // ── Schedule yoxdursa dərhal qur ──
+    // processTimeslot-dan əldə etdiyimiz nəticəni istifadə edirək — əlavə KV read yoxdur!
+    if (!scheduleExists) {
+        try {
+            console.log(`📅 Schedule tapılmadı, cədvəl qurulur... (${baku.hours}:${String(baku.minutes).padStart(2, '0')})`);
+            await buildDailySchedule(env);
+        } catch (e) {
+            console.error(`❌ Schedule build xətası: ${e}`);
+        }
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4364,13 +4435,18 @@ document.getElementById('activeWeek').textContent=d.activeWeek}
 async function loadUsers(){
 const d=await api('/api/users');if(!d)return;
 if(!d.users||d.users.length===0){document.getElementById('userTable').innerHTML='<p style="color:#94a3b8">İstifadəçi tapılmadı.</p>';return}
-let h='<table><tr><th>Ad</th><th>Username</th><th>ID</th><th>Qoşulub</th><th>Son aktivlik</th></tr>';
+let h='<table><tr><th>Ad</th><th>Username</th><th>ID</th><th>Şəhər</th><th>Dil</th><th>Oruc</th><th>Qəza</th><th>Namaz</th><th>Qoşulub</th><th>Son aktivlik</th></tr>';
 for(const u of d.users){
 const name=(u.firstName||'')+(u.lastName?' '+u.lastName:'');
 const uname=u.username?'<span class="username">@'+u.username+'</span>':'-';
 const joined=u.joined?new Date(u.joined).toLocaleDateString('az'):'?';
 const last=u.lastActive?timeAgo(u.lastActive):'?';
-h+='<tr><td>'+name+'</td><td>'+uname+'</td><td>'+u.id+'</td><td>'+joined+'</td><td>'+last+'</td></tr>'}
+const city=u.userCity||'baku';
+const lang=u.userLang||'az';
+const oruc=u.orucCount||0;
+const qeza=u.qezaCount||0;
+const nmz=u.bugunNamaz||0;
+h+='<tr><td>'+name+'</td><td>'+uname+'</td><td>'+u.id+'</td><td>'+city+'</td><td>'+lang+'</td><td>'+oruc+'</td><td>'+qeza+'</td><td>'+nmz+'/5</td><td>'+joined+'</td><td>'+last+'</td></tr>'}
 h+='</table>';document.getElementById('userTable').innerHTML=h}
 function timeAgo(iso){
 const d=Date.now()-new Date(iso).getTime();const m=Math.floor(d/60000);
@@ -4451,6 +4527,10 @@ async function handleAdminAPI(request, env, pathname) {
 
     // GET /api/users
     if (pathname === '/api/users' && request.method === 'GET') {
+        const baku = getBakuNow();
+        const year = baku.year;
+        const dateStr = `${year}-${String(baku.month).padStart(2, '0')}-${String(baku.day).padStart(2, '0')}`;
+
         const users = [];
         let cursor = null;
         do {
@@ -4459,11 +4539,49 @@ async function handleAdminAPI(request, env, pathname) {
                 if (key.name === 'users:count') continue;
                 const id = key.name.replace('user:', '');
                 const data = await env.NOTIFICATIONS_KV.get(key.name, 'json');
+                let userObj;
                 if (data && typeof data === 'object') {
-                    users.push({ id, ...data });
+                    userObj = { id, ...data };
                 } else {
-                    users.push({ id, firstName: 'Naməlum', joined: data || '?', lastActive: null });
+                    userObj = { id, firstName: 'Naməlum', joined: data || '?', lastActive: null };
                 }
+
+                // Əlavə statistika: qəza, oruc, bu günkü namaz, şəhər, dil
+                try {
+                    const [missedData, fastingData, prayerLogData, settingsData] = await Promise.all([
+                        env.NOTIFICATIONS_KV.get(`missed:${id}`, 'json'),
+                        env.NOTIFICATIONS_KV.get(`fasting:${id}:${year}`, 'json'),
+                        env.NOTIFICATIONS_KV.get(`prayer_log:${id}:${dateStr}`, 'json'),
+                        env.NOTIFICATIONS_KV.get(`settings:${id}`, 'json'),
+                    ]);
+
+                    // Qəza borcu
+                    let qezaCount = 0;
+                    if (missedData) {
+                        for (const v of Object.values(missedData)) { qezaCount += (v || 0); }
+                    }
+                    userObj.qezaCount = qezaCount;
+
+                    // Oruc tutduğu günlər
+                    let orucCount = 0;
+                    if (fastingData) {
+                        for (const v of Object.values(fastingData)) { if (v === true) orucCount++; }
+                    }
+                    userObj.orucCount = orucCount;
+
+                    // Bu gün qıldığı namazlar
+                    let bugunNamaz = 0;
+                    if (prayerLogData) {
+                        for (const v of Object.values(prayerLogData)) { if (v === true) bugunNamaz++; }
+                    }
+                    userObj.bugunNamaz = bugunNamaz;
+
+                    // Şəhər və Dil
+                    userObj.userCity = (settingsData && settingsData.city) || 'baku';
+                    userObj.userLang = (settingsData && settingsData.language) || 'az';
+                } catch { /* statistika oxunuşu xətası — skip */ }
+
+                users.push(userObj);
             }
             cursor = result.list_complete ? null : result.cursor;
         } while (cursor);
@@ -4512,12 +4630,22 @@ async function handleAdminAPI(request, env, pathname) {
 //  WORKER EXPORT
 // ═══════════════════════════════════════════════════════════════
 
+let cachedWorkerUrl = null;
+
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
 
-        // Auto-discover Worker URL for cron chaining
-        ctx.waitUntil(env.NOTIFICATIONS_KV.put('system:worker_url', url.origin));
+        // Auto-discover Worker URL for cron chaining (cached + get verification to save KV puts)
+        if (!cachedWorkerUrl) {
+            cachedWorkerUrl = url.origin;
+            ctx.waitUntil((async () => {
+                const existingUrl = await env.NOTIFICATIONS_KV.get('system:worker_url');
+                if (existingUrl !== cachedWorkerUrl) {
+                    await env.NOTIFICATIONS_KV.put('system:worker_url', cachedWorkerUrl);
+                }
+            })());
+        }
 
         // ── Cron Chaining Endpoint ──
         if (url.pathname === '/cron-continue' && request.method === 'POST') {
