@@ -3886,6 +3886,7 @@ async function handleWebhook(request, env) {
 
 async function buildDailySchedule(env) {
     const baku = getBakuNow();
+    const isoDate = baku.isoDate;
     const isRam = isRamadan(baku.year, baku.month, baku.day);
     const allUsers = await getAllUserIds(env);
 
