@@ -3520,6 +3520,15 @@ async function handleCallbackQuery(callbackQuery, env) {
         settings.prayers.isha = false;
         await saveSettings(chatId, settings, env);
 
+        // ── Schedule-u invalidate et ki yeni ayarlar tətbiq olunsun ──
+        try {
+            const baku = getBakuNow();
+            await env.NOTIFICATIONS_KV.delete(`schedule_full:${baku.isoDate}`);
+            console.log(`🔄 Schedule invalidated: all notifications off for user ${chatId}`);
+        } catch (e) {
+            console.error(`⚠️ Schedule invalidate xətası: ${e}`);
+        }
+
         let msg = `${t('settings_title', lang)}\n`;
         msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
         msg += `${t('settings_all_off_done', lang)}\n\n`;
@@ -3554,6 +3563,15 @@ async function handleCallbackQuery(callbackQuery, env) {
 
         if (changed) {
             await saveSettings(chatId, settings, env);
+
+            // ── Schedule-u invalidate et ki yeni ayarlar tətbiq olunsun ──
+            try {
+                const baku = getBakuNow();
+                await env.NOTIFICATIONS_KV.delete(`schedule_full:${baku.isoDate}`);
+                console.log(`🔄 Schedule invalidated: settings changed for user ${chatId}`);
+            } catch (e) {
+                console.error(`⚠️ Schedule invalidate xətası: ${e}`);
+            }
 
             let msg = `${t('settings_title', lang)}\n`;
             msg += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
@@ -4167,9 +4185,46 @@ async function processTimeslot(env, ctx, workerUrl = null) {
 
     const isRam = isRamadan(baku.year, baku.month, baku.day);
     const dayDataCache = {};
+    const settingsCache = {};
 
     for (const job of jobsToProcess) {
         try {
+            // ── Real-time ayar yoxlaması (bağlanmış bildirişləri göndərmə!) ──
+            if (job.type !== 'channel' && job.userId) {
+                if (!settingsCache[job.userId]) {
+                    settingsCache[job.userId] = await getSettings(job.userId, env);
+                }
+                const userSettings = settingsCache[job.userId];
+
+                // Namaz bağlıdırsa — skip
+                if (job.prayer && userSettings.prayers && !userSettings.prayers[job.prayer]) {
+                    console.log(`⏭ Skip: user=${job.userId}, prayer=${job.prayer} deaktivdir`);
+                    continue;
+                }
+
+                // Reminder tipi bağlıdırsa — skip
+                if (job.type === 'reminder15' && !userSettings.reminder15) {
+                    console.log(`⏭ Skip: user=${job.userId}, reminder15 deaktivdir`);
+                    continue;
+                }
+                if (job.type === 'reminder10' && !userSettings.reminder10) {
+                    console.log(`⏭ Skip: user=${job.userId}, reminder10 deaktivdir`);
+                    continue;
+                }
+                if (job.type === 'reminder5' && !userSettings.reminder5) {
+                    console.log(`⏭ Skip: user=${job.userId}, reminder5 deaktivdir`);
+                    continue;
+                }
+                if (job.type === 'ontime' && !userSettings.reminderOnTime) {
+                    console.log(`⏭ Skip: user=${job.userId}, reminderOnTime deaktivdir`);
+                    continue;
+                }
+                if (job.type === 'morning' && !userSettings.morningSchedule) {
+                    console.log(`⏭ Skip: user=${job.userId}, morningSchedule deaktivdir`);
+                    continue;
+                }
+            }
+
             const cityId = job.cityId || 'baku';
             if (!dayDataCache[cityId]) {
                 dayDataCache[cityId] = await getDayDataForCity(baku.year, baku.month, baku.day, cityId, env);
@@ -4203,7 +4258,7 @@ async function processTimeslot(env, ctx, workerUrl = null) {
 
     // Handle remaining jobs (Self-Chaining)
     if (jobsRemaining.length > 0) {
-        // Overflow: qalan job-ları schedule-a geri yaz
+        // Overflow: qalan job-ları schedule-a geri yaz, bitmiş timeslotu saxla
         fullSchedule[timeKey] = jobsRemaining;
         await env.NOTIFICATIONS_KV.put(`schedule_full:${isoDate}`, JSON.stringify(fullSchedule), { expirationTtl: 86400 * 2 });
 
@@ -4222,11 +4277,10 @@ async function processTimeslot(env, ctx, workerUrl = null) {
             console.warn("⚠️ Cannot chain cron: WORKER_URL (system:worker_url) or ADMIN_PASSWORD missing. Remaining jobs delayed.");
         }
     } else {
-        // Bu timeslot bitdi — KV-ya yazmağa ehtiyac yoxdur!
-        // Schedule TTL=48saat ilə avtomatik silinəcək.
-        // Növbəti dəqiqə oxuduqda bu timeslot artıq boş olacaq (jobs yoxdur).
-        // Bu şəkildə gündəlik ~80 put əməliyyatına qənaət edirik.
-        console.log(`✅ Timeslot ${timeKey}: ${jobsToProcess.length} job icra edildi.`);
+        // ── Bu timeslot bitdi — schedule-dan sil ki dublikat olmasın ──
+        delete fullSchedule[timeKey];
+        await env.NOTIFICATIONS_KV.put(`schedule_full:${isoDate}`, JSON.stringify(fullSchedule), { expirationTtl: 86400 * 2 });
+        console.log(`✅ Timeslot ${timeKey}: ${jobsToProcess.length} job icra edildi və schedule-dan silindi.`);
     }
 
     return true; // true = schedule mövcud idi
